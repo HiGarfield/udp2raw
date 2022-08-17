@@ -64,7 +64,11 @@ ev_pipe (int filedes [2])
   struct sockaddr_in adr2;
   int adr2_size = sizeof (adr2);
   SOCKET listener;
+#if EV_SELECT_IS_WINSOCKET
+  SOCKET sock [2] = { INVALID_SOCKET, INVALID_SOCKET };
+#else
   SOCKET sock [2] = { -1, -1 };
+#endif
 
   if ((listener = ev_tcp_socket ()) == INVALID_SOCKET)
     return -1;
@@ -88,9 +92,11 @@ ev_pipe (int filedes [2])
   if (connect (sock [0], (struct sockaddr *)&addr, addr_size))
     goto fail;
 
-  /* TODO: returns INVALID_SOCKET on winsock accept, not < 0. fix it */
-  /* when convenient, probably by just removing error checking altogether? */
+#if EV_SELECT_IS_WINSOCKET
+  if ((sock [1] = accept (listener, 0, 0)) == INVALID_SOCKET)
+#else
   if ((sock [1] = accept (listener, 0, 0)) < 0)
+#endif
     goto fail;
 
   /* windows vista returns fantasy port numbers for sockets:
@@ -154,8 +160,8 @@ ev_time (void)
   ui.u.LowPart  = ft.dwLowDateTime;
   ui.u.HighPart = ft.dwHighDateTime;
 
-  /* msvc cannot convert ulonglong to double... yes, it is that sucky */
-  return (LONGLONG)(ui.QuadPart - 116444736000000000) * 1e-7;
+  /* also, msvc cannot convert ulonglong to double... yes, it is that sucky */
+  return EV_TS_FROM_USEC (((LONGLONG)(ui.QuadPart - 116444736000000000) * 1e-1));
 }
 
 #endif
