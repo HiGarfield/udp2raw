@@ -780,7 +780,7 @@ void init_filter(int port)
 		}
 	}
 
-	int dummy;
+	int dummy = 0;
 
 	int ret=setsockopt(raw_recv_fd, SOL_SOCKET, SO_DETACH_FILTER, &dummy, sizeof(dummy)); //in case i forgot to remove
 	if (ret != 0)
@@ -928,7 +928,7 @@ void init_filter(int port)
 		bpf.filter = code_icmp;
 	}
 
-	int dummy;
+	int dummy = 0;
 
 	int ret=setsockopt(raw_recv_fd, SOL_SOCKET, SO_DETACH_FILTER, &dummy, sizeof(dummy)); //in case i forgot to remove
 	if (ret != 0)
@@ -951,7 +951,7 @@ void remove_filter()
 {
 	filter_port=0;
 #ifdef UDP2RAW_LINUX
-	int dummy;
+	int dummy = 0;
 	int ret=setsockopt(raw_recv_fd, SOL_SOCKET, SO_DETACH_FILTER, &dummy, sizeof(dummy));
 	if (ret != 0)
 	{
