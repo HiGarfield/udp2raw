@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    permissions:
+      contents: read
+    strategy:
+      max-parallel: 20
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04, ubuntu-18.04, macos-10.15, macos-11, macos-12]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: unified
+          fetch-depth: 0
+
+      - name: Compile
+        run: |
+          make
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: udp2raw-${{ matrix.os }}
+          path: udp2raw
