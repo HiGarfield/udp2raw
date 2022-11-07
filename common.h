@@ -167,7 +167,7 @@ typedef u64_t anti_replay_seq_t;
 
 typedef u64_t my_time_t;
 
-const int max_addr_len=100;
+const int max_addr_len=300;
 
 extern int force_socket_buf;
 
