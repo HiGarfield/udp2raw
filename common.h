@@ -33,10 +33,8 @@
 
 #if defined(UDP2RAW_MP)
 const int is_udp2raw_mp=1;
-#if !defined(__CYGWIN__) && !defined(__MINGW32__)
 #include <pcap.h>
-#else
-#include <pcap_wrapper.h>
+#if defined(__CYGWIN__) || defined(__MINGW32__)
 #define NO_LIBNET
 #endif
 

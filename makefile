@@ -49,12 +49,18 @@ endif
 NAME:=udp2raw
 
 ifeq ($(TARGET_OS),Windows)
-  PCAP:= pcap_wrapper.cpp
+  PCAP:= -Inpcap/Include -lwpcap
+  ifneq (,$(findstring x86_64,$(CXX_TARGET)))
+    PCAP+= -Lnpcap/Lib/x64
+  endif
+  ifneq (,$(findstring i686,$(CXX_TARGET)))
+    PCAP+= -Lnpcap/Lib
+  endif
 else
   PCAP:= -lpcap
 endif
 MP:=-DUDP2RAW_MP
-COMMON:=$(filter-out pcap_wrapper.cpp, $(wildcard *.cpp lib/*.cpp))
+COMMON:=$(wildcard *.cpp lib/*.cpp)
 LIBS:= -lpthread -isystem libev
 ifeq ($(TARGET_OS),Windows)
   LIBS+= -lws2_32
