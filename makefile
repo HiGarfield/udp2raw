@@ -40,10 +40,11 @@ FLAGS:= \
 	-Wno-unused-variable \
 	-Wno-unused-parameter \
 	-Wno-missing-field-initializers
-EXTRA_FLAGS:= \
-	-Os -flto
+
 ifeq ($(TARGET_OS),Windows)
-  EXTRA_FLAGS+= -static
+  EXTRA_FLAGS:= -O3 -static
+else
+  EXTRA_FLAGS:= -Os -flto
 endif
 
 NAME:=udp2raw

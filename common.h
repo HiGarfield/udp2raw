@@ -122,9 +122,7 @@ using  namespace std;
 
 
 #if defined(__MINGW32__)
-int inet_pton(int af, const char *src, void *dst);
-const char *inet_ntop(int af, const void *src, char *dst, socklen_t size);
-#define setsockopt(a,b,c,d,e) setsockopt(a,b,c,(const char *)(d),e)
+#define setsockopt(a,b,c,d,e) (setsockopt((a),(b),(c),(const char *)(d),(e)))
 #endif
 
 char *get_sock_error();
