@@ -66,6 +66,10 @@ LIBS:= -lpthread -isystem libev
 ifeq ($(TARGET_OS),Windows)
   LIBS+= -lws2_32
 endif
+ifeq ($(TARGET_OS),Linux)
+  LIBS+= -lrt
+endif
+
 SOURCES:=$(COMMON) $(wildcard lib/aes_faster_c/*.cpp)
 SOURCES_AES_ACC=$(COMMON) $(wildcard lib/aes_acc/aes*.c) lib/aes_acc/asm/$@.S
 COMPILE_OPT:= -I. $(LIBS) $(FLAGS) $(EXTRA_FLAGS) -o $(NAME)
