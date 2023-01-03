@@ -1,83 +1,53 @@
-ifeq ($(OS),Windows_NT)
-  HOST_OS:= Windows
-else
-  HOST_OS:= $(shell uname -s)
-endif
-$(info HOST_OS = $(HOST_OS))
+# Determine target OS
+CXX_TARGET := $(shell $(CXX) -dumpmachine)
 
-CXX_TARGET:=$(shell $(CXX) -dumpmachine 2>&1)
-ifneq (,$(findstring -w32,$(CXX_TARGET)))
-  TARGET_OS:=Windows
-else
-  ifneq (,$(findstring -w64,$(CXX_TARGET)))
-    TARGET_OS:=Windows
-  else
-    ifneq (,$(findstring -linux,$(CXX_TARGET)))
-      TARGET_OS:=Linux
-    else
-      ifneq (,$(findstring -apple,$(CXX_TARGET)))
-        TARGET_OS:=MacOS
-      else
-        $(error "Target OS not supported.")
-      endif
-    endif
-  endif
-endif
+TARGET_OS := $(strip $(if $(findstring -w64,$(CXX_TARGET)),Windows,\
+                      $(if $(findstring -w32,$(CXX_TARGET)),Windows,\
+                      $(if $(findstring -linux,$(CXX_TARGET)),Linux,\
+                      $(if $(findstring -apple,$(CXX_TARGET)),MacOS,\
+                      $(error "Target OS not supported."))))))
 $(info TARGET_OS = $(TARGET_OS))
 
-ifeq ($(HOST_OS),Windows)
-  UDP2RAW_GIT_VER?=$(shell git rev-parse HEAD 2>nul)
-else
-  UDP2RAW_GIT_VER?=$(shell git rev-parse HEAD 2>/dev/null)
-endif
+# Get Git version
+UDP2RAW_GIT_VER ?= $(shell git rev-parse HEAD || echo unknown)
+UDP2RAW_GIT_VER_CODE := "const char *gitversion = \"$(UDP2RAW_GIT_VER)\";"
+$(info UDP2RAW_GIT_VER = $(UDP2RAW_GIT_VER))
 
-ifeq ($(UDP2RAW_GIT_VER),)
-  UDP2RAW_GIT_VER="unknown"
-endif
+# Compiler flags
+FLAGS := -std=c++11 -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter \
+          -Wno-missing-field-initializers
+EXTRA_FLAGS := -Os -s
+EXTRA_FLAGS += $(if $(filter MacOS,$(TARGET_OS)),,-ffunction-sections -Wl,--gc-sections)
+EXTRA_FLAGS += $(if $(filter Windows,$(TARGET_OS)),-static,)
 
-FLAGS:= \
-	-std=c++11 -Wall -Wextra \
-	-Wno-unused-variable \
-	-Wno-unused-parameter \
-	-Wno-missing-field-initializers
-EXTRA_FLAGS:= \
-	-Os -flto
-ifeq ($(TARGET_OS),Windows)
-  EXTRA_FLAGS+= -static
-endif
+PCAP := $(if $(filter Windows,$(TARGET_OS)), \
+            -isystem npcap/Include -lwpcap \
+          $(if $(findstring x86_64,$(CXX_TARGET)),-Lnpcap/Lib/x64, \
+          $(if $(findstring i386,$(CXX_TARGET)),-Lnpcap/Lib, \
+          $(if $(findstring i486,$(CXX_TARGET)),-Lnpcap/Lib, \
+          $(if $(findstring i586,$(CXX_TARGET)),-Lnpcap/Lib, \
+          $(if $(findstring i686,$(CXX_TARGET)),-Lnpcap/Lib, \
+          $(error "Target architecture not supported. CXX_TARGET is $(CXX_TARGET)")))))), \
+          -lpcap)
 
-NAME:=udp2raw
+MP := -DUDP2RAW_MP
+COMMON := $(wildcard *.cpp lib/*.cpp)
+LIBS := -lpthread -isystem libev
+LIBS += $(if $(filter Windows,$(TARGET_OS)),-lws2_32)
+LIBS += $(if $(filter Linux,$(TARGET_OS)),-lrt)
 
-ifeq ($(TARGET_OS),Windows)
-  PCAP:= -isystem npcap/Include -lwpcap
-  ifneq (,$(findstring x86_64,$(CXX_TARGET)))
-    PCAP+= -Lnpcap/Lib/x64
-  endif
-  ifneq (,$(findstring i686,$(CXX_TARGET)))
-    PCAP+= -Lnpcap/Lib
-  endif
-else
-  PCAP:= -lpcap
-endif
-MP:=-DUDP2RAW_MP
-COMMON:=$(wildcard *.cpp lib/*.cpp)
-LIBS:= -lpthread -isystem libev
-ifeq ($(TARGET_OS),Windows)
-  LIBS+= -lws2_32
-endif
-SOURCES:=$(COMMON) $(wildcard lib/aes_faster_c/*.cpp)
-SOURCES_AES_ACC=$(COMMON) $(wildcard lib/aes_acc/aes*.c) lib/aes_acc/asm/$@.S
-COMPILE_OPT:= -I. $(LIBS) $(FLAGS) $(EXTRA_FLAGS) -o $(NAME)
-AES_ACC_TARGETS:=$(basename $(notdir $(wildcard lib/aes_acc/asm/*.S)))
+SOURCES := $(COMMON) $(wildcard lib/aes_faster_c/*.cpp)
+SOURCES_AES_ACC = $(COMMON) $(wildcard lib/aes_acc/aes*.c) lib/aes_acc/asm/$@.S
+AES_ACC_TARGETS := $(basename $(notdir $(wildcard lib/aes_acc/asm/*.S)))
+NAME := udp2raw
+COMPILE_OPT := -I. $(LIBS) $(FLAGS) $(EXTRA_FLAGS) -o $(NAME)
 
+# Define targets
 .PHONY: linux $(AES_ACC_TARGETS) pcap git_version clean
 
-ifeq ($(TARGET_OS),Linux)
-.DEFAULT_GOAL:= linux
-else
-.DEFAULT_GOAL:= pcap
-endif
+.DEFAULT_GOAL := $(if $(filter Linux,$(TARGET_OS)),linux,pcap)
 
+# Build rules
 linux: git_version
 	$(CXX) $(SOURCES) $(COMPILE_OPT)
 
@@ -87,16 +57,10 @@ $(AES_ACC_TARGETS): git_version
 pcap: git_version
 	$(CXX) $(SOURCES) $(PCAP) $(MP) $(COMPILE_OPT)
 
+# Generate git version header
 git_version:
-ifeq ($(HOST_OS),Windows)
-	echo const char *gitversion = "$(UDP2RAW_GIT_VER)"; >git_version.h
-else
-	echo "const char *gitversion = \"$(UDP2RAW_GIT_VER)\";" >git_version.h
-endif
+	@echo $(UDP2RAW_GIT_VER_CODE) > git_version.h
 
+# Clean target
 clean:
-ifeq ($(HOST_OS),Windows)
-	-del /f /q $(NAME).exe git_version.h
-else
-	-rm -f $(NAME) git_version.h
-endif
+	-$(RM) $(NAME) git_version.h
