@@ -16,24 +16,10 @@ file(WRITE git_version.h "const char *gitversion = \"${GIT_VER}\";")
 
 file(REMOVE makefile)
 
-set(SOURCE_FILES
-        main.cpp 
-        lib/md5.cpp
-        lib/pbkdf2-sha1.cpp
-        lib/pbkdf2-sha256.cpp
-        encrypt.cpp
-        log.cpp
-        network.cpp
-        common.cpp
-        connection.cpp
-        misc.cpp
-        fd_manager.cpp
-        client.cpp
-        server.cpp
-        lib/aes_faster_c/aes.cpp
-        lib/aes_faster_c/wrapper.cpp
-        my_ev.cpp
-)
+aux_source_directory(. SOURCE_FILES)
+aux_source_directory(lib SOURCE_FILES)
+aux_source_directory(lib/aes_faster_c SOURCE_FILES)
+
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined")
 
 add_executable(udp2raw ${SOURCE_FILES})
