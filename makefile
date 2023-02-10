@@ -6,23 +6,19 @@ endif
 $(info HOST_OS = $(HOST_OS))
 
 CXX_TARGET:=$(shell $(CXX) -dumpmachine 2>&1)
+
 ifneq (,$(findstring -w32,$(CXX_TARGET)))
   TARGET_OS:=Windows
+else ifneq (,$(findstring -w64,$(CXX_TARGET)))
+  TARGET_OS:=Windows
+else ifneq (,$(findstring -linux,$(CXX_TARGET)))
+  TARGET_OS:=Linux
+else ifneq (,$(findstring -apple,$(CXX_TARGET)))
+  TARGET_OS:=MacOS
 else
-  ifneq (,$(findstring -w64,$(CXX_TARGET)))
-    TARGET_OS:=Windows
-  else
-    ifneq (,$(findstring -linux,$(CXX_TARGET)))
-      TARGET_OS:=Linux
-    else
-      ifneq (,$(findstring -apple,$(CXX_TARGET)))
-        TARGET_OS:=MacOS
-      else
-        $(error "Target OS not supported.")
-      endif
-    endif
-  endif
+  $(error "Target OS not supported.")
 endif
+
 $(info TARGET_OS = $(TARGET_OS))
 
 ifeq ($(HOST_OS),Windows)
@@ -32,8 +28,10 @@ else
 endif
 
 ifeq ($(UDP2RAW_GIT_VER),)
-  UDP2RAW_GIT_VER="unknown"
+  UDP2RAW_GIT_VER=unknown
 endif
+
+$(info UDP2RAW_GIT_VER = $(UDP2RAW_GIT_VER))
 
 FLAGS:= \
 	-std=c++11 -Wall -Wextra \
@@ -53,9 +51,10 @@ ifeq ($(TARGET_OS),Windows)
   PCAP:= -Inpcap/Include -lwpcap
   ifneq (,$(findstring x86_64,$(CXX_TARGET)))
     PCAP+= -Lnpcap/Lib/x64
-  endif
-  ifneq (,$(findstring i686,$(CXX_TARGET)))
+  else ifneq (,$(findstring i686,$(CXX_TARGET)))
     PCAP+= -Lnpcap/Lib
+  else
+    $(error "Target architecture not supported.")
   endif
 else
   PCAP:= -lpcap
@@ -94,9 +93,9 @@ pcap: git_version
 
 git_version:
 ifeq ($(HOST_OS),Windows)
-	echo const char *gitversion = "$(UDP2RAW_GIT_VER)"; >git_version.h
+	@echo const char *gitversion = "$(UDP2RAW_GIT_VER)"; >git_version.h
 else
-	echo "const char *gitversion = \"$(UDP2RAW_GIT_VER)\";" >git_version.h
+	@echo "const char *gitversion = \"$(UDP2RAW_GIT_VER)\";" >git_version.h
 endif
 
 clean:
