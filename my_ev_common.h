@@ -13,7 +13,9 @@
 #define EV_FD_TO_WIN32_HANDLE(fd) (fd)
 #define EV_WIN32_HANDLE_TO_FD(handle) (handle)
 #define EV_WIN32_CLOSE_FD(fd) closesocket(fd)
+#ifndef FD_SETSIZE
 #define FD_SETSIZE 4096
+#endif
 
 #endif
 //#define EV_VERIFY 2

@@ -281,6 +281,7 @@ int init_ws() {
 #endif
 
 #if defined(__MINGW32__)
+#if _WIN32_WINNT < 0x0600 // Windows Vista
 int inet_pton(int af, const char *src, void *dst) {
     struct sockaddr_storage ss;
     int size = sizeof(ss);
@@ -324,6 +325,8 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size) {
     /* cannot direclty use &size because of strict aliasing rules */
     return (WSAAddressToString((struct sockaddr *)&ss, sizeof(ss), NULL, dst, &s) == 0) ? dst : NULL;
 }
+#endif
+
 char *get_sock_error() {
     static char buf[1000];
     int e = WSAGetLastError();

@@ -558,7 +558,7 @@ void async_cb(struct ev_loop *loop, struct ev_async *watcher, int revents) {
     if (send_with_pcap && !pcap_header_captured) {
         int empty = 0;
         char *p;
-        int len;
+        int len = 0;
         pthread_mutex_lock(&queue_mutex);
         empty = my_queue.empty();
         if (!empty) {
@@ -586,7 +586,7 @@ void async_cb(struct ev_loop *loop, struct ev_async *watcher, int revents) {
     while (1) {
         int empty = 0;
         char *p;
-        int len;
+        int len = 0;
         pthread_mutex_lock(&queue_mutex);
         empty = my_queue.empty();
         if (!empty) {
