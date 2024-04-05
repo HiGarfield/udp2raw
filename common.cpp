@@ -327,18 +327,13 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size) {
 char *get_sock_error() {
     static char buf[1000];
     int e = WSAGetLastError();
-    wchar_t *s = NULL;
-    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                   NULL, e,
-                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                   (LPWSTR)&s, 0, NULL);
-    sprintf(buf, "%d:%S", e, s);
+    sprintf(buf, "%d:", e);
     int len = strlen(buf);
-    while (len > 0 && (buf[len - 1] == '\r' || buf[len - 1] == '\n')) {
-        len--;
-        buf[len] = 0;
-    }
-    LocalFree(s);
+    FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                   NULL, e, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                   buf + len, sizeof(buf) - len - 1, NULL);
+    for (int i = strlen(buf) - 1; i >= 0 && isspace(buf[i]); i--)
+        buf[i] = '\0';
     return buf;
 }
 int get_sock_errno() {
