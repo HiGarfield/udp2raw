@@ -272,24 +272,32 @@ int cipher_xor_decrypt(const char *data, char *output, int &len, char *key) {
 
 int padding(char *data, int &data_len, int padding_num) {
     int old_len = data_len;
-    data_len += 1;
-    if (data_len % padding_num != 0) {
-        data_len = (data_len / padding_num) * padding_num + padding_num;
-    }
-    unsigned char *p = (unsigned char *)&data[data_len - 1];
-    *p = (data_len - old_len);
+    int pad_len = padding_num - (old_len % padding_num);
+    memset(data + old_len, pad_len, pad_len);
+    data_len = old_len + pad_len;
     return 0;
 }
 
 int de_padding(const char *data, int &data_len, int padding_num) {
-    if (data_len == 0) return -1;
-    if ((uint8_t)data[data_len - 1] > padding_num) return -1;
-    data_len -= (uint8_t)data[data_len - 1];
-    if (data_len < 0) {
+    if (data_len == 0 || data_len % padding_num != 0) {
         return -1;
     }
+    uint8_t pad_len = (uint8_t)(data[data_len - 1]);
+    if (pad_len == 0 || pad_len > padding_num) {
+        return -1;
+    }
+    if (data_len < pad_len) {
+        return -1;
+    }
+    // for (int i = 1; i <= pad_len; ++i) {
+    //     if ((uint8_t)(data[data_len - i]) != pad_len) {
+    //         return -1;
+    //     }
+    // }
+    data_len -= pad_len;
     return 0;
 }
+
 void aes_ecb_encrypt(const char *data, char *output) {
     static int first_time = 1;
     char *key = (char *)cipher_key_encrypt;
