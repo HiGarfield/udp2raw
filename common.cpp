@@ -802,11 +802,14 @@ void myexit(int a) {
 vector<string> string_to_vec(const char *s, const char *sp) {
     vector<string> res;
     string str = s;
-    char *p = strtok((char *)str.c_str(), sp);
-    while (p != NULL) {
-        res.push_back(p);
-        // printf ("%s\n",p);
-        p = strtok(NULL, sp);
+    vector<char> writable(str.begin(), str.end());
+    writable.push_back(0);
+
+    char *save_ptr = 0;
+    char *token = strtok_r(writable.data(), sp, &save_ptr);
+    while (token != 0) {
+        res.push_back(token);
+        token = strtok_r(0, sp, &save_ptr);
     }
 
     /* for(int i=0;i<(int)res.size();i++)
@@ -828,18 +831,14 @@ vector<vector<string> > string_to_vec2(const char *s) {
 }
 int read_file(const char *file, string &output) {
     const int max_len = 3 * 1024 * 1024;
-    // static char buf[max_len+100];
-    string buf0;
-    buf0.reserve(max_len + 200);
-    char *buf = (char *)buf0.c_str();
-    buf[max_len] = 0;
-    // buf[sizeof(buf)-1]=0;
+    vector<char> buf(max_len + 1, 0);
     int fd = open(file, O_RDONLY);
     if (fd == -1) {
         mylog(log_error, "read_file %s fail\n", file);
         return -1;
     }
-    int len = read(fd, buf, max_len);
+    int len = read(fd, buf.data(), max_len);
+    close(fd);
     if (len == max_len) {
         buf[0] = 0;
         mylog(log_error, "%s too long,buf not large enough\n", file);
@@ -850,7 +849,7 @@ int read_file(const char *file, string &output) {
         return -3;
     } else {
         buf[len] = 0;
-        output = buf;
+        output = buf.data();
     }
     return 0;
 }
@@ -880,9 +879,10 @@ int run_command(string command0, char *&output, int flag) {
         return -1;
     }
 
-    int len = fread(buf, 1024 * 1024, 1, in);
+    size_t len = fread(buf, 1, 1024 * 1024, in);
     if (len == 1024 * 1024) {
         buf[0] = 0;
+        pclose(in);
         mylog(level, "too long,buf not larger enough\n");
         return -2;
     } else {
@@ -890,6 +890,7 @@ int run_command(string command0, char *&output, int flag) {
     }
     int ret;
     if ((ret = ferror(in))) {
+        pclose(in);
         mylog(level, "command %s fread failed,ferror return value %d \n", command, ret);
         return -3;
     }
@@ -897,10 +898,14 @@ int run_command(string command0, char *&output, int flag) {
     output = buf;
     ret = pclose(in);
 
-    int ret2 = WEXITSTATUS(ret);
+    if (ret == -1) {
+        mylog(level, "commnad %s ,pclose failed,errno :%s \n", command, strerror(errno));
+        return -4;
+    }
 
-    if (ret != 0 || ret2 != 0) {
-        mylog(level, "commnad %s ,pclose returned %d ,WEXITSTATUS %d,errnor :%s \n", command, ret, ret2, strerror(errno));
+    if (!WIFEXITED(ret) || WEXITSTATUS(ret) != 0) {
+        mylog(level, "commnad %s ,pclose returned %d ,WIFEXITED %d,WEXITSTATUS %d,errnor :%s \n", command, ret, WIFEXITED(ret),
+              WIFEXITED(ret) ? WEXITSTATUS(ret) : -1, strerror(errno));
         return -4;
     }
 
