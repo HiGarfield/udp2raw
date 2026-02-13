@@ -828,18 +828,14 @@ vector<vector<string> > string_to_vec2(const char *s) {
 }
 int read_file(const char *file, string &output) {
     const int max_len = 3 * 1024 * 1024;
-    // static char buf[max_len+100];
-    string buf0;
-    buf0.reserve(max_len + 200);
-    char *buf = (char *)buf0.c_str();
-    buf[max_len] = 0;
-    // buf[sizeof(buf)-1]=0;
+    vector<char> buf(max_len + 1, 0);
     int fd = open(file, O_RDONLY);
     if (fd == -1) {
         mylog(log_error, "read_file %s fail\n", file);
         return -1;
     }
-    int len = read(fd, buf, max_len);
+    int len = read(fd, buf.data(), max_len);
+    close(fd);
     if (len == max_len) {
         buf[0] = 0;
         mylog(log_error, "%s too long,buf not large enough\n", file);
@@ -850,7 +846,7 @@ int read_file(const char *file, string &output) {
         return -3;
     } else {
         buf[len] = 0;
-        output = buf;
+        output = buf.data();
     }
     return 0;
 }
@@ -860,7 +856,7 @@ int run_command(string command0, char *&output, int flag) {
         myexit(-1);
     }
 #ifdef UDP2RAW_LINUX
-    FILE *in;
+    FILE *in = 0;
 
     if ((flag & show_log) == 0) command0 += " 2>&1 ";
 
@@ -874,35 +870,48 @@ int run_command(string command0, char *&output, int flag) {
         mylog(log_debug, "run_command %s\n", command);
     }
     static __thread char buf[1024 * 1024 + 100];
+    int return_code = 0;
     buf[sizeof(buf) - 1] = 0;
     if (!(in = popen(command, "r"))) {
         mylog(level, "command %s popen failed,errno %s\n", command, strerror(errno));
         return -1;
     }
 
-    int len = fread(buf, 1024 * 1024, 1, in);
+    size_t len = fread(buf, 1, 1024 * 1024, in);
     if (len == 1024 * 1024) {
         buf[0] = 0;
         mylog(level, "too long,buf not larger enough\n");
-        return -2;
+        return_code = -2;
+        goto run_command_clean;
     } else {
         buf[len] = 0;
     }
-    int ret;
-    if ((ret = ferror(in))) {
-        mylog(level, "command %s fread failed,ferror return value %d \n", command, ret);
-        return -3;
+
+    if (ferror(in)) {
+        mylog(level, "command %s fread failed,ferror return value %d \n", command, ferror(in));
+        return_code = -3;
+        goto run_command_clean;
     }
+
     // if(output!=0)
     output = buf;
-    ret = pclose(in);
 
-    int ret2 = WEXITSTATUS(ret);
+run_command_clean:
+    int ret = pclose(in);
+
+    if (ret == -1) {
+        mylog(level, "commnad %s ,pclose returned %d,errnor :%s \n", command, ret, strerror(errno));
+        return (return_code != 0) ? return_code : -4;
+    }
+
+    int ret2 = WIFEXITED(ret) ? WEXITSTATUS(ret) : -1;
 
     if (ret != 0 || ret2 != 0) {
         mylog(level, "commnad %s ,pclose returned %d ,WEXITSTATUS %d,errnor :%s \n", command, ret, ret2, strerror(errno));
-        return -4;
+        return (return_code != 0) ? return_code : -4;
     }
+
+    if (return_code != 0) return return_code;
 
 #endif
     return 0;
