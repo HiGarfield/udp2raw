@@ -828,18 +828,14 @@ vector<vector<string> > string_to_vec2(const char *s) {
 }
 int read_file(const char *file, string &output) {
     const int max_len = 3 * 1024 * 1024;
-    // static char buf[max_len+100];
-    string buf0;
-    buf0.reserve(max_len + 200);
-    char *buf = (char *)buf0.c_str();
-    buf[max_len] = 0;
-    // buf[sizeof(buf)-1]=0;
+    vector<char> buf(max_len + 1, 0);
     int fd = open(file, O_RDONLY);
     if (fd == -1) {
         mylog(log_error, "read_file %s fail\n", file);
         return -1;
     }
-    int len = read(fd, buf, max_len);
+    int len = read(fd, buf.data(), max_len);
+    close(fd);
     if (len == max_len) {
         buf[0] = 0;
         mylog(log_error, "%s too long,buf not large enough\n", file);
@@ -850,7 +846,7 @@ int read_file(const char *file, string &output) {
         return -3;
     } else {
         buf[len] = 0;
-        output = buf;
+        output = buf.data();
     }
     return 0;
 }
@@ -880,7 +876,7 @@ int run_command(string command0, char *&output, int flag) {
         return -1;
     }
 
-    int len = fread(buf, 1024 * 1024, 1, in);
+    size_t len = fread(buf, 1, 1024 * 1024, in);
     if (len == 1024 * 1024) {
         buf[0] = 0;
         mylog(level, "too long,buf not larger enough\n");
