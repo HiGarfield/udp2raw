@@ -882,7 +882,7 @@ int run_command(string command0, char *&output, int flag) {
         return -1;
     }
 
-    int len = fread(buf, 1024 * 1024, 1, in);
+    size_t len = fread(buf, 1, 1024 * 1024, in);
     if (len == 1024 * 1024) {
         buf[0] = 0;
         mylog(level, "too long,buf not larger enough\n");
@@ -899,9 +899,12 @@ int run_command(string command0, char *&output, int flag) {
     output = buf;
     ret = pclose(in);
 
-    int ret2 = WEXITSTATUS(ret);
+    int ret2 = -1;
+    if (ret != -1 && WIFEXITED(ret)) {
+        ret2 = WEXITSTATUS(ret);
+    }
 
-    if (ret != 0 || ret2 != 0) {
+    if (ret == -1 || ret2 != 0) {
         mylog(level, "commnad %s ,pclose returned %d ,WEXITSTATUS %d,errnor :%s \n", command, ret, ret2, strerror(errno));
         return -4;
     }
