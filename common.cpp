@@ -883,34 +883,43 @@ int run_command(string command0, char *&output, int flag) {
     }
 
     size_t len = fread(buf, 1, 1024 * 1024, in);
+    int result = 0;  // Track return value
+    
     if (len == 1024 * 1024) {
         buf[0] = 0;
         mylog(level, "too long,buf not larger enough\n");
-        return -2;
+        result = -2;
     } else {
         buf[len] = 0;
+        
+        int ret;
+        if ((ret = ferror(in))) {
+            mylog(level, "command %s fread failed,ferror return value %d \n", command, ret);
+            result = -3;
+        } else {
+            // if(output!=0)
+            output = buf;
+        }
     }
-    int ret;
-    if ((ret = ferror(in))) {
-        mylog(level, "command %s fread failed,ferror return value %d \n", command, ret);
-        return -3;
-    }
-    // if(output!=0)
-    output = buf;
-    ret = pclose(in);
+    
+    // Always close the pipe
+    int ret = pclose(in);
 
-    int ret2 = -1;
-    if (ret != -1 && WIFEXITED(ret)) {
-        ret2 = WEXITSTATUS(ret);
-    }
+    // Only check exit status if no previous error
+    if (result == 0) {
+        int ret2 = -1;
+        if (ret != -1 && WIFEXITED(ret)) {
+            ret2 = WEXITSTATUS(ret);
+        }
 
-    if (ret == -1 || ret2 != 0) {
-        mylog(level, "commnad %s ,pclose returned %d ,WEXITSTATUS %d,errnor :%s \n", command, ret, ret2, strerror(errno));
-        return -4;
+        if (ret == -1 || ret2 != 0) {
+            mylog(level, "commnad %s ,pclose returned %d ,WEXITSTATUS %d,errnor :%s \n", command, ret, ret2, strerror(errno));
+            result = -4;
+        }
     }
 
 #endif
-    return 0;
+    return result;
 }
 /*
 int run_command_no_log(string command0,char * &output) {
