@@ -752,7 +752,9 @@ int client_event_loop() {
                         if (a->addr->sa_family == raw_ip_version) {
                             if (((struct sockaddr_in *)a->addr)->sin_addr.s_addr == tmp_addr.inner.ipv4.sin_addr.s_addr) {
                                 found++;
-                                strcpy(dev, d->name);
+                                if (snprintf(dev, sizeof(dev), "%s", d->name) >= int(sizeof(dev))) {
+                                    mylog(log_warn, "device name is too long and has been truncated: %s\n", d->name);
+                                }
                             }
                         }
                     } else {
@@ -765,7 +767,9 @@ int client_event_loop() {
                         if (a->addr->sa_family == raw_ip_version) {
                             if (memcmp(&((struct sockaddr_in6 *)a->addr)->sin6_addr, &tmp_addr.inner.ipv6.sin6_addr, sizeof(struct in6_addr)) == 0) {
                                 found++;
-                                strcpy(dev, d->name);
+                                if (snprintf(dev, sizeof(dev), "%s", d->name) >= int(sizeof(dev))) {
+                                    mylog(log_warn, "device name is too long and has been truncated: %s\n", d->name);
+                                }
                             }
                         }
                     }
