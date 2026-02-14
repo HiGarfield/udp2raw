@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string>
 #include "encrypt.h"
 #include "common.h"
 #include "log.h"
