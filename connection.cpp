@@ -318,9 +318,14 @@ int send_bare(raw_info_t &raw_info, const char *data, int len)  // send function
 int reserved_parse_bare(const char *input, int input_len, char *&data, int &len)  // a sub function used in recv_bare
 {
     static char recv_data_buf[buf_len];
+    const int bare_header_len = sizeof(iv_t) + sizeof(padding_t) + 1;
 
     if (input_len < 0) {
         mylog(log_debug, "input_len <0\n");
+        return -1;
+    }
+    if (input_len < bare_header_len) {
+        mylog(log_debug, "input_len %d is too short for bare header\n", input_len);
         return -1;
     }
     if (my_decrypt(input, recv_data_buf, input_len) != 0) {
@@ -464,6 +469,12 @@ int send_data_safer(conn_info_t &conn_info, const char *data, int len, u32_t con
 int reserved_parse_safer(conn_info_t &conn_info, const char *input, int input_len, char &type, char *&data, int &len)  // subfunction for recv_safer,allow overlap
 {
     static char recv_data_buf[buf_len];
+    const int safer_header_len = sizeof(anti_replay_seq_t) + sizeof(my_id_t) * 2 + 2;
+
+    if (input_len < safer_header_len) {
+        mylog(log_debug, "input_len %d is too short for safer header\n", input_len);
+        return -1;
+    }
 
     // char *recv_data_buf=recv_data_buf0; //fix strict alias warning
     if (my_decrypt(input, recv_data_buf, input_len) != 0) {
@@ -500,6 +511,11 @@ int reserved_parse_safer(conn_info_t &conn_info, const char *input, int input_le
     // printf("recv _len %d\n ",recv_len);
     data = recv_data_buf + sizeof(anti_replay_seq_t) + sizeof(my_id_t) * 2;
     len = input_len - (sizeof(anti_replay_seq_t) + sizeof(my_id_t) * 2);
+
+    if (len < 2) {
+        mylog(log_debug, "safer payload len %d is too short\n", len);
+        return -1;
+    }
 
     if (data[0] != 'h' && data[0] != 'd') {
         mylog(log_debug, "first byte is not h or d  ,%x\n", data[0]);
