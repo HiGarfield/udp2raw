@@ -918,7 +918,7 @@ int run_command(string command0, char *&output, int flag) {
         }
     } else if (pclose_ret == -1) {
         // Log pclose failure even when there was a previous error
-        mylog(level, "command %s ,pclose failed: %s (previous error: %d)\n", command, strerror(errno), result);
+        mylog(level, "command %s ,pclose returned -1: %s (previous error: %d)\n", command, strerror(errno), result);
     }
 
 #endif
