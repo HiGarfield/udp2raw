@@ -21,7 +21,9 @@ int address_t::from_str(char *str) {
     int is_ipv6, is_ipv4_or_domain;
 
     mylog(log_info, "parsing address: %s\n", str);
-    is_ipv6 = sscanf(str, "[%45[^]]]:%5[0123456789]%c", addr_str, port_str, &drop) == 2;
+    // `%45[^]]` truncates valid IPv6 literals with scope IDs (for example
+    // `[fe80::1%enp0s31f6]:4096`) and makes parsing fail unexpectedly.
+    is_ipv6 = sscanf(str, "[%255[^]]]:%5[0123456789]%c", addr_str, port_str, &drop) == 2;
     is_ipv4_or_domain =
         !is_ipv6 && sscanf(str, "%255[^:]:%5[0123456789]%c", addr_str, port_str, &drop) == 2;
     if ((!is_ipv6 && !is_ipv4_or_domain) || strtoul(port_str, NULL, 10) > 65535UL) {
