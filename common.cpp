@@ -913,7 +913,7 @@ int run_command(string command0, char *&output, int flag) {
         }
 
         if (ret == -1 || ret2 != 0) {
-            mylog(level, "commnad %s ,pclose returned %d ,WEXITSTATUS %d,errnor :%s \n", command, ret, ret2, strerror(errno));
+            mylog(level, "command %s ,pclose returned %d ,WEXITSTATUS %d,errno :%s \n", command, ret, ret2, strerror(errno));
             result = -4;
         }
     }
