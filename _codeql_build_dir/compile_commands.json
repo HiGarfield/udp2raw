@@ -1,0 +1,98 @@
+[
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/main.cpp.o -c /home/runner/work/udp2raw/udp2raw/main.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/main.cpp",
+  "output": "CMakeFiles/udp2raw.dir/main.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/lib/md5.cpp.o -c /home/runner/work/udp2raw/udp2raw/lib/md5.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/lib/md5.cpp",
+  "output": "CMakeFiles/udp2raw.dir/lib/md5.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.o -c /home/runner/work/udp2raw/udp2raw/lib/pbkdf2-sha1.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/lib/pbkdf2-sha1.cpp",
+  "output": "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.o -c /home/runner/work/udp2raw/udp2raw/lib/pbkdf2-sha256.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/lib/pbkdf2-sha256.cpp",
+  "output": "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/encrypt.cpp.o -c /home/runner/work/udp2raw/udp2raw/encrypt.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/encrypt.cpp",
+  "output": "CMakeFiles/udp2raw.dir/encrypt.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/log.cpp.o -c /home/runner/work/udp2raw/udp2raw/log.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/log.cpp",
+  "output": "CMakeFiles/udp2raw.dir/log.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/network.cpp.o -c /home/runner/work/udp2raw/udp2raw/network.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/network.cpp",
+  "output": "CMakeFiles/udp2raw.dir/network.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/common.cpp.o -c /home/runner/work/udp2raw/udp2raw/common.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/common.cpp",
+  "output": "CMakeFiles/udp2raw.dir/common.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/connection.cpp.o -c /home/runner/work/udp2raw/udp2raw/connection.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/connection.cpp",
+  "output": "CMakeFiles/udp2raw.dir/connection.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/misc.cpp.o -c /home/runner/work/udp2raw/udp2raw/misc.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/misc.cpp",
+  "output": "CMakeFiles/udp2raw.dir/misc.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/fd_manager.cpp.o -c /home/runner/work/udp2raw/udp2raw/fd_manager.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/fd_manager.cpp",
+  "output": "CMakeFiles/udp2raw.dir/fd_manager.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/client.cpp.o -c /home/runner/work/udp2raw/udp2raw/client.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/client.cpp",
+  "output": "CMakeFiles/udp2raw.dir/client.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/server.cpp.o -c /home/runner/work/udp2raw/udp2raw/server.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/server.cpp",
+  "output": "CMakeFiles/udp2raw.dir/server.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.o -c /home/runner/work/udp2raw/udp2raw/lib/aes_faster_c/aes.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/lib/aes_faster_c/aes.cpp",
+  "output": "CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.o -c /home/runner/work/udp2raw/udp2raw/lib/aes_faster_c/wrapper.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/lib/aes_faster_c/wrapper.cpp",
+  "output": "CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.o"
+},
+{
+  "directory": "/home/runner/work/udp2raw/udp2raw/_codeql_build_dir",
+  "command": "/home/runner/work/udp2raw/.codeql-scratch/dbs/cpp/working/autobuild/bin/c++  -I/home/runner/work/udp2raw/udp2raw/. -isystem /home/runner/work/udp2raw/udp2raw/libev -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -O2 -g -fsanitize=address,undefined -O3 -DNDEBUG -std=gnu++11 -o CMakeFiles/udp2raw.dir/my_ev.cpp.o -c /home/runner/work/udp2raw/udp2raw/my_ev.cpp",
+  "file": "/home/runner/work/udp2raw/udp2raw/my_ev.cpp",
+  "output": "CMakeFiles/udp2raw.dir/my_ev.cpp.o"
+}
+]
