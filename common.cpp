@@ -979,9 +979,9 @@ string trim(const string &str, char c) {
 
 vector<string> parse_conf_line(const string &s0) {
     string s = s0;
-    s.reserve(s.length() + 200);
-    char *buf = (char *)s.c_str();
-    // char buf[s.length()+200];
+    vector<char> buf_storage(s.begin(), s.end());
+    buf_storage.push_back('\0');
+    char *buf = buf_storage.data();
     char *p = buf;
     int i = int(s.length()) - 1;
     int j;
