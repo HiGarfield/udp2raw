@@ -903,19 +903,22 @@ int run_command(string command0, char *&output, int flag) {
     }
     
     // Always close the pipe
-    int ret = pclose(in);
+    int pclose_ret = pclose(in);
 
     // Only check exit status if no previous error
     if (result == 0) {
         int ret2 = -1;
-        if (ret != -1 && WIFEXITED(ret)) {
-            ret2 = WEXITSTATUS(ret);
+        if (pclose_ret != -1 && WIFEXITED(pclose_ret)) {
+            ret2 = WEXITSTATUS(pclose_ret);
         }
 
-        if (ret == -1 || ret2 != 0) {
-            mylog(level, "command %s ,pclose returned %d ,WEXITSTATUS %d,errno :%s \n", command, ret, ret2, strerror(errno));
+        if (pclose_ret == -1 || ret2 != 0) {
+            mylog(level, "command %s ,pclose returned %d ,WEXITSTATUS %d,errno :%s \n", command, pclose_ret, ret2, strerror(errno));
             result = -4;
         }
+    } else if (pclose_ret == -1) {
+        // Log pclose failure even when there was a previous error
+        mylog(level, "command %s ,pclose failed: %s (previous error: %d)\n", command, strerror(errno), result);
     }
 
 #endif
