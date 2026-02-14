@@ -1,0 +1,42 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/udp2raw.dir/link.d"
+  "CMakeFiles/udp2raw.dir/client.cpp.o"
+  "CMakeFiles/udp2raw.dir/client.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/common.cpp.o"
+  "CMakeFiles/udp2raw.dir/common.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/connection.cpp.o"
+  "CMakeFiles/udp2raw.dir/connection.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/encrypt.cpp.o"
+  "CMakeFiles/udp2raw.dir/encrypt.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/fd_manager.cpp.o"
+  "CMakeFiles/udp2raw.dir/fd_manager.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.o"
+  "CMakeFiles/udp2raw.dir/lib/aes_faster_c/aes.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.o"
+  "CMakeFiles/udp2raw.dir/lib/aes_faster_c/wrapper.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/lib/md5.cpp.o"
+  "CMakeFiles/udp2raw.dir/lib/md5.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.o"
+  "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha1.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.o"
+  "CMakeFiles/udp2raw.dir/lib/pbkdf2-sha256.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/log.cpp.o"
+  "CMakeFiles/udp2raw.dir/log.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/main.cpp.o"
+  "CMakeFiles/udp2raw.dir/main.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/misc.cpp.o"
+  "CMakeFiles/udp2raw.dir/misc.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/my_ev.cpp.o"
+  "CMakeFiles/udp2raw.dir/my_ev.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/network.cpp.o"
+  "CMakeFiles/udp2raw.dir/network.cpp.o.d"
+  "CMakeFiles/udp2raw.dir/server.cpp.o"
+  "CMakeFiles/udp2raw.dir/server.cpp.o.d"
+  "udp2raw"
+  "udp2raw.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/udp2raw.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
