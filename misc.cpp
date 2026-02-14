@@ -965,7 +965,7 @@ void iptables_rule()  // handles -a -g --gen-add  --keep-rule --clear --wait-loc
 
 int unit_test() {
     printf("running unit test\n");
-    vector<string> conf_lines = {"---aaa", "--aaa bbb", "-a bbb", " \t \t \t-a\t \t \t bbbbb\t \t \t "};
+    vector<string> conf_lines = {"---aaa", "--aaa bbb", "-a bbb", " \t \t \t-a\t \t \t bbbbb\t \t \t ", "-a\r\r\rbbb\r\r\r", "-a\n\n\nbbb\n\n\n"};
     for (int i = 0; i < int(conf_lines.size()); i++) {
         printf("orign:%s\n", conf_lines[i].c_str());
         auto res = parse_conf_line(conf_lines[i]);

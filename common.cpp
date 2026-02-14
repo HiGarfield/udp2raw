@@ -990,14 +990,14 @@ vector<string> parse_conf_line(const string &s0) {
     vector<string> res;
     // strcpy(buf,(char *)s.c_str());
     while (i >= 0) {
-        if (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\r')
+        if (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\r' || buf[i] == '\n')
             buf[i] = 0;
         else
             break;
         i--;
     }
     while (*p != 0) {
-        if (*p == ' ' || *p == '\t' || *p == '\r') {
+        if (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n') {
             p++;
         } else
             break;
@@ -1011,7 +1011,7 @@ vector<string> parse_conf_line(const string &s0) {
     }
 
     for (i = 0; i < new_len; i++) {
-        if (p[i] == ' ' || p[i] == '\t' || p[i] == '\r') {
+        if (p[i] == ' ' || p[i] == '\t' || p[i] == '\r' || p[i] == '\n') {
             break;
         }
     }
@@ -1021,7 +1021,7 @@ vector<string> parse_conf_line(const string &s0) {
     }
 
     j = i;
-    while (p[j] == ' ' || p[j] == '\t' || p[j] == '\r')
+    while (p[j] == ' ' || p[j] == '\t' || p[j] == '\r' || p[j] == '\n')
         j++;
     p[i] = 0;
     res.push_back(p);
