@@ -752,7 +752,12 @@ int client_event_loop() {
                         if (a->addr->sa_family == raw_ip_version) {
                             if (((struct sockaddr_in *)a->addr)->sin_addr.s_addr == tmp_addr.inner.ipv4.sin_addr.s_addr) {
                                 found++;
-                                strcpy(dev, d->name);
+                                if (snprintf(dev, sizeof(dev), "%s", d->name) >= int(sizeof(dev))) {
+                                    mylog(log_fatal, "device name is too long (exceeds %d chars): %s\n", int(sizeof(dev)) - 1, d->name);
+                                    mylog(log_fatal, "please specify the device manually using --dev option\n");
+                                    pcap_freealldevs(interfaces);
+                                    myexit(-1);
+                                }
                             }
                         }
                     } else {
@@ -765,7 +770,12 @@ int client_event_loop() {
                         if (a->addr->sa_family == raw_ip_version) {
                             if (memcmp(&((struct sockaddr_in6 *)a->addr)->sin6_addr, &tmp_addr.inner.ipv6.sin6_addr, sizeof(struct in6_addr)) == 0) {
                                 found++;
-                                strcpy(dev, d->name);
+                                if (snprintf(dev, sizeof(dev), "%s", d->name) >= int(sizeof(dev))) {
+                                    mylog(log_fatal, "device name is too long (exceeds %d chars): %s\n", int(sizeof(dev)) - 1, d->name);
+                                    mylog(log_fatal, "please specify the device manually using --dev option\n");
+                                    pcap_freealldevs(interfaces);
+                                    myexit(-1);
+                                }
                             }
                         }
                     }
