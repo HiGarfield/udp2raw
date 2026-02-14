@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 #ifdef UDP2RAW_LINUX
         signal(SIGINT, signal_handler);
         signal(SIGHUP, signal_handler);
-        signal(SIGKILL, signal_handler);
+        // SIGKILL cannot be caught or ignored, so do not register a handler for it.
         signal(SIGTERM, signal_handler);
         signal(SIGQUIT, signal_handler);
 #else
