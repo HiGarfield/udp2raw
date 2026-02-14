@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
 #include "encrypt.h"
 #include "common.h"
 #include "log.h"
@@ -53,14 +54,14 @@ int aes128cfb_old = 0;
 // TODO key negotiation and forward secrecy
 
 int my_init_keys(const char *user_passwd, int is_client) {
-    char tmp[1000] = "";
+    string tmp;
     int len = strlen(user_passwd);
 
-    strcat(tmp, user_passwd);
+    tmp.reserve(len + 4);
+    tmp.append(user_passwd);
+    tmp.append("key1");
 
-    strcat(tmp, "key1");
-
-    md5((uint8_t *)tmp, strlen(tmp), (uint8_t *)normal_key);
+    md5((uint8_t *)tmp.data(), tmp.size(), (uint8_t *)normal_key);
 
     if (auth_mode == auth_hmac_sha1)
         is_hmac_used = 1;
