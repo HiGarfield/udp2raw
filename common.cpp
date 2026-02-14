@@ -884,14 +884,14 @@ int run_command(string command0, char *&output, int flag) {
 
     size_t len = fread(buf, 1, 1024 * 1024, in);
     int result = 0;  // Track return value
-    
+
     if (len == 1024 * 1024) {
         buf[0] = 0;
         mylog(level, "too long,buf not larger enough\n");
         result = -2;
     } else {
         buf[len] = 0;
-        
+
         int ret;
         if ((ret = ferror(in))) {
             mylog(level, "command %s fread failed,ferror return value %d \n", command, ret);
@@ -901,7 +901,7 @@ int run_command(string command0, char *&output, int flag) {
             output = buf;
         }
     }
-    
+
     // Always close the pipe
     int pclose_ret = pclose(in);
 
