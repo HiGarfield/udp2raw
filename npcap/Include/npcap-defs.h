@@ -1,7 +1,7 @@
 /***********************IMPORTANT NPCAP LICENSE TERMS***********************
  *
  * Npcap (https://npcap.com) is a Windows packet sniffing driver and library and
- * is copyright (c) 2013-2023 by Nmap Software LLC ("The Nmap Project").  All
+ * is copyright (c) 2013-2025 by Nmap Software LLC ("The Nmap Project").  All
  * rights reserved.
  *
  * Even though Npcap source code is publicly available for review, it is not
@@ -148,5 +148,24 @@ C_ASSERT(sizeof(PACKET_OID_DATA) == 12);
 #define NPF_CONFIG_TESTMODE  0x40 /* TestMode */
 // BPF Extensions supported. Output is ULONG, max extension supported.
 #define NPF_GETINFO_BPFEXT 0x00000003
+// Supported mode bits for BIOCSMODE (PacketSetMode, pcap_setmode). Output is ULONG.
+#define NPF_GETINFO_MODES 0x00000004
+// Performance statistics for the filter module
+#define NPF_GETINFO_STATS 0x00000005
+// All of these are 2 USHORTs: average for last 10 and last 10K calls
+#define NPF_STATSINFO_RECVTIMES 0x00000001 /* ticks per recieve indication */
+#define NPF_STATSINFO_SENDTIMES 0x00000002 /* ticks per send indication */
+#define NPF_STATSINFO_DPCTIMES  0x00000003 /* ticks at DPC level, both dirs */
+// Internal debugging info unique to a filter module
+#define NPF_GETINFO_MODDBG 0x00000006
+// Subrequests of NPF_GETINFO_MODDBG
+#define NPF_MODDBG_PF_SUPPORTED 0x00000001
+#define NPF_MODDBG_PF_MY        0x00000002
+#define NPF_MODDBG_PF_HIGHER    0x00000003
+#define NPF_MODDBG_LA_MY        0x00000004
+#define NPF_MODDBG_LA_HIGHER    0x00000005
+#define NPF_MODDBG_BITS         0x00000006
+#define NPF_MODDBG_MAXFRAME     0x00000007
+#define NPF_MODDBG_NUMOPENS     0x00000008
 
 #endif /* NPCAP_DEFS_H */

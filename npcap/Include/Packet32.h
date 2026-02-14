@@ -1,7 +1,7 @@
 /***********************IMPORTANT NPCAP LICENSE TERMS***********************
  *
  * Npcap (https://npcap.com) is a Windows packet sniffing driver and library and
- * is copyright (c) 2013-2023 by Nmap Software LLC ("The Nmap Project").  All
+ * is copyright (c) 2013-2025 by Nmap Software LLC ("The Nmap Project").  All
  * rights reserved.
  *
  * Even though Npcap source code is publicly available for review, it is not
@@ -141,7 +141,8 @@ typedef struct _AirpcapHandle* PAirpcapHandle;
 #define PACKET_DEPRECATED_INTERNAL_STRUCT_DEFINITION
 #endif
 
-// Working modes, a bitfield
+// Working modes, a 32-bit integer
+// 0x000000ff: WinPcap legacy modes (least-significant byte)
 // 0b00000000
 //      |  ||_ STAT or CAPT
 //      |  |__ MON (TME extensions, not supported)
@@ -153,6 +154,14 @@ typedef struct _AirpcapHandle* PAirpcapHandle;
 #define PACKET_MODE_MON 0x2 ///< Monitoring mode
 #define PACKET_MODE_DUMP 0x10 ///< Dump mode
 #define PACKET_MODE_STAT_DUMP PACKET_MODE_DUMP | PACKET_MODE_STAT ///< Statistical dump Mode
+// 0x0000ff00: Npcap extensions
+// 0b00000000
+//        |||_ SENDTORX
+//        ||__ SENDTORX_CLEAR
+//        |___ NANO
+#define PACKET_MODE_SENDTORX       (1 << 8)  /// SendToRx mode
+#define PACKET_MODE_SENDTORX_CLEAR (1 << 9)  /// Disable SendToRx, overriding Registry
+#define PACKET_MODE_NANO           (1 << 10) /// Nanosecond precision timestamps
 
 
 /// Alignment macro. Defines the alignment size.
@@ -314,7 +323,7 @@ extern "C"
 	LPPACKET PacketAllocatePacket(void);
 	VOID PacketInitPacket(_Out_ LPPACKET lpPacket, _In_reads_bytes_(Length) PVOID  Buffer, _In_ UINT  Length);
 	VOID PacketFreePacket(_In_ _Post_invalid_ LPPACKET lpPacket);
-	_Success_(return) BOOLEAN PacketReceivePacket(_In_ LPADAPTER AdapterObject, _Out_ LPPACKET lpPacket, _In_ BOOLEAN Sync);
+	_Success_(return) BOOLEAN PacketReceivePacket(_In_ LPADAPTER AdapterObject, _Inout_updates_bytes_(lpPacket->Length) LPPACKET lpPacket, _In_ BOOLEAN Sync);
 	_Success_(return) BOOLEAN PacketSetHwFilter(_In_ LPADAPTER AdapterObject, _In_ ULONG Filter);
 	_Success_(return) BOOLEAN PacketGetAdapterNames(_Out_writes_opt_(_Old_(*BufferSize)) PCHAR pStr, _Inout_ PULONG  BufferSize);
 	_Success_(return) BOOLEAN PacketGetNetInfoEx(_In_ PCCH AdapterName, _Out_writes_to_(_Old_(*NEntries),*NEntries) npf_if_addr* buffer, _Inout_ PLONG NEntries);
