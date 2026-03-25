@@ -624,7 +624,7 @@ void process_arg(int argc, char *argv[])  // process all options
                         mylog(log_fatal, "--fifo not supported in this version\n");
                         myexit(-1);
                     }
-                    sscanf(optarg, "%s", fifo_file);
+                    sscanf(optarg, "%999s", fifo_file);
 
                     mylog(log_info, "fifo_file =%s \n", fifo_file);
                 } else if (strcmp(long_options[option_index].name, "conf-file") == 0) {
