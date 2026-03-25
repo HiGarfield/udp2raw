@@ -132,8 +132,10 @@ conn_info_t::~conn_info_t() {
     assert(timer_fd64 == 0);
     // if(oppsite_const_id!=0)     //do this at conn_manager 's deconstuction function
     // conn_manager.const_id_mp.erase(oppsite_const_id);
-    if (blob != 0)
+    if (blob != 0) {
         delete blob;
+        blob = 0;
+    }
 
     // send_packet_info.protocol=g_packet_info_send.protocol;
 }
