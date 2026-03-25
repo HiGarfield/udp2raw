@@ -333,6 +333,7 @@ void aes_ecb_decrypt1(char *data) {
 int cipher_aes128cbc_encrypt(const char *data, char *output, int &len, char *key) {
     static int first_time = 1;
 
+    if (len > buf_len - 16) return -1;
     char buf[buf_len];
     memcpy(buf, data, len);  // TODO inefficient code
 
