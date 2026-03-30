@@ -283,17 +283,26 @@ int de_padding(const char *data, int &data_len, int padding_num) {
         return -1;
     }
     uint8_t pad_len = (uint8_t)(data[data_len - 1]);
-    if (pad_len == 0 || pad_len > padding_num) {
+
+    // Constant-time validation to prevent padding oracle side-channels.
+    // Accumulate errors in 'bad' without early returns based on secret data.
+    // Use sign-bit extraction (>> 31) to detect out-of-range values.
+    unsigned int bad = 0;
+    bad |= (unsigned int)((int)pad_len - 1) >> 31;
+    bad |= (unsigned int)((int)padding_num - (int)pad_len) >> 31;
+
+    // Check all possible padding positions in constant time.
+    // The mask is 0xFFFFFFFF when i <= pad_len (byte is within padding),
+    // and 0x00000000 otherwise. The -(condition) idiom maps true (1) to
+    // 0xFFFFFFFF and false (0) to 0x00000000 in two's complement unsigned.
+    for (int i = 1; i <= padding_num; ++i) {
+        unsigned int mask = (unsigned int)(-((int)pad_len - i >= 0));
+        bad |= mask & ((unsigned int)(uint8_t)(data[data_len - i]) ^ (unsigned int)pad_len);
+    }
+
+    if (bad != 0) {
         return -1;
     }
-    if (data_len < pad_len) {
-        return -1;
-    }
-    // for (int i = 1; i <= pad_len; ++i) {
-    //     if ((uint8_t)(data[data_len - i]) != pad_len) {
-    //         return -1;
-    //     }
-    // }
     data_len -= pad_len;
     return 0;
 }
@@ -574,12 +583,15 @@ int my_decrypt(const char *data, char *output, int &len /*,char * key*/) {
     if (is_hmac_used)
         return decrypt_AE(data, output, len);
 
-    if (cipher_decrypt(data, output, len, normal_key) != 0) {
-        mylog(log_debug, "cipher_decrypt failed \n");
-        return -1;
-    }
-    if (auth_verify(output, len) != 0) {
-        mylog(log_debug, "auth_verify failed\n");
+    // Always run both cipher_decrypt and auth_verify regardless of
+    // intermediate results to prevent padding oracle side-channel attacks.
+    // In the MAC-then-encrypt path, returning early on padding failure
+    // would let an attacker distinguish bad padding from bad MAC.
+    int decrypt_result = cipher_decrypt(data, output, len, normal_key);
+    int verify_result = auth_verify(output, len);
+
+    if (decrypt_result != 0 || verify_result != 0) {
+        mylog(log_debug, "decrypt or verify failed\n");
         return -1;
     }
 

@@ -747,7 +747,7 @@ int server_event_loop() {
                     mylog(log_debug, "raw_recv_fd,%llu,%llu,%llu  \n", begin_time, end_time, end_time - begin_time);
                 }
             } else if (events[idx].data.u64 == (u64_t)fifo_fd) {
-                int len = read(fifo_fd, buf, sizeof(buf));
+                int len = read(fifo_fd, buf, sizeof(buf) - 1);
                 if (len < 0) {
                     mylog(log_warn, "fifo read failed len=%d,errno=%s\n", len, strerror(errno));
                     continue;

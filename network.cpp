@@ -546,10 +546,10 @@ int init_raw_socket() {
     string dst = remote_addr.get_ip();
     if (raw_ip_version == AF_INET) {
         // sprintf(filter_exp,"ip and src %s and dst %s and (tcp or udp or icmp)",my_ntoa(source_ip_uint32),dst.c_str());
-        sprintf(filter_exp, "ip and src %s and dst %s and (tcp or udp or icmp)", src.c_str(), dst.c_str());
+        snprintf(filter_exp, sizeof(filter_exp), "ip and src %s and dst %s and (tcp or udp or icmp)", src.c_str(), dst.c_str());
     } else {
         assert(raw_ip_version == AF_INET6);
-        sprintf(filter_exp, "ip6 and src %s and dst %s and (tcp or udp or icmp6)", src.c_str(), dst.c_str());
+        snprintf(filter_exp, sizeof(filter_exp), "ip6 and src %s and dst %s and (tcp or udp or icmp6)", src.c_str(), dst.c_str());
     }
 
     if (pcap_compile(pcap_handle, &g_filter, filter_exp, 0, PCAP_NETMASK_UNKNOWN) == -1) {
@@ -731,11 +731,11 @@ void init_filter(int port) {
 
     if (raw_ip_version == AF_INET) {
         if (raw_mode == mode_faketcp) {
-            sprintf(filter_exp, "ip and tcp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
+            snprintf(filter_exp, sizeof(filter_exp), "ip and tcp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
         } else if (raw_mode == mode_udp) {
-            sprintf(filter_exp, "ip and udp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
+            snprintf(filter_exp, sizeof(filter_exp), "ip and udp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
         } else if (raw_mode == mode_icmp) {
-            sprintf(filter_exp, "ip and icmp and src %s", remote_addr.get_ip());
+            snprintf(filter_exp, sizeof(filter_exp), "ip and icmp and src %s", remote_addr.get_ip());
         } else {
             mylog(log_fatal, "unknow raw mode\n");
             myexit(-1);
@@ -743,11 +743,11 @@ void init_filter(int port) {
     } else {
         assert(raw_ip_version == AF_INET6);
         if (raw_mode == mode_faketcp) {
-            sprintf(filter_exp, "ip6 and tcp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
+            snprintf(filter_exp, sizeof(filter_exp), "ip6 and tcp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
         } else if (raw_mode == mode_udp) {
-            sprintf(filter_exp, "ip6 and udp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
+            snprintf(filter_exp, sizeof(filter_exp), "ip6 and udp and src %s and src port %d and dst port %d", remote_addr.get_ip(), remote_addr.get_port(), port);
         } else if (raw_mode == mode_icmp) {
-            sprintf(filter_exp, "ip6 and icmp6 and src %s", remote_addr.get_ip());
+            snprintf(filter_exp, sizeof(filter_exp), "ip6 and icmp6 and src %s", remote_addr.get_ip());
         } else {
             mylog(log_fatal, "unknow raw mode\n");
             myexit(-1);
@@ -1492,7 +1492,7 @@ int peek_raw(raw_info_t &raw_info) {
                 if (recv_info.protocol != IPPROTO_ICMPV6) return -1;
             }
             struct my_icmphdr *icmph = (my_icmphdr *)payload;
-            if (payload_len < int(sizeof(my_udphdr)))
+            if (payload_len < int(sizeof(my_icmphdr)))
                 return -1;
             recv_info.src_port = ntohs(icmph->id);
             break;
@@ -1712,7 +1712,7 @@ int send_raw_tcp(raw_info_t &raw_info, const char *payload, int payloadlen) {  /
     tcph->check = 0;  // leave checksum 0 now, filled later by pseudo header
     tcph->urg_ptr = 0;
 
-    char *tcp_data = send_raw_tcp_buf + +tcph->doff * 4;
+    char *tcp_data = send_raw_tcp_buf + tcph->doff * 4;
 
     if (payload)
         memcpy(tcp_data, payload, payloadlen);
