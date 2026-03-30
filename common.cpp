@@ -1047,11 +1047,13 @@ int create_fifo(char *file) {
     struct stat st;
     if (fstat(fifo_fd, &st) != 0) {
         mylog(log_fatal, "fstat failed for fifo file %s\n", file);
+        close(fifo_fd);
         myexit(-1);
     }
 
     if (!S_ISFIFO(st.st_mode)) {
         mylog(log_fatal, "%s is not a fifo\n", file);
+        close(fifo_fd);
         myexit(-1);
     }
 
