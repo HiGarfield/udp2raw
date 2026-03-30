@@ -118,9 +118,9 @@ char *address_t::get_ip() {
 
     ip_addr[max_addr_len - 1] = 0;
     if (get_type() == AF_INET6) {
-        sprintf(s, "%s", ip_addr);
+        snprintf(s, sizeof(s), "%s", ip_addr);
     } else {
-        sprintf(s, "%s", ip_addr);
+        snprintf(s, sizeof(s), "%s", ip_addr);
     }
 
     return s;
@@ -332,7 +332,7 @@ const char *inet_ntop(int af, const void *src, char *dst, socklen_t size) {
 char *get_sock_error() {
     static char buf[1000];
     int e = WSAGetLastError();
-    sprintf(buf, "%d:", e);
+    snprintf(buf, sizeof(buf), "%d:", e);
     int len = strlen(buf);
     FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                    NULL, e, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
@@ -347,7 +347,7 @@ int get_sock_errno() {
 #else
 char *get_sock_error() {
     static char buf[1000];
-    sprintf(buf, "%d:%s", errno, strerror(errno));
+    snprintf(buf, sizeof(buf), "%d:%s", errno, strerror(errno));
     return buf;
 }
 int get_sock_errno() {
