@@ -289,11 +289,11 @@ int de_padding(const char *data, int &data_len, int padding_num) {
     if (data_len < pad_len) {
         return -1;
     }
-    // for (int i = 1; i <= pad_len; ++i) {
-    //     if ((uint8_t)(data[data_len - i]) != pad_len) {
-    //         return -1;
-    //     }
-    // }
+    for (int i = 1; i <= pad_len; ++i) {
+        if ((uint8_t)(data[data_len - i]) != pad_len) {
+            return -1;
+        }
+    }
     data_len -= pad_len;
     return 0;
 }
