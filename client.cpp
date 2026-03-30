@@ -620,7 +620,7 @@ void fifo_cb(struct ev_loop *loop, struct ev_io *watcher, int revents) {
     char buf[buf_len];
     int fifo_fd = watcher->fd;
 
-    int len = read(fifo_fd, buf, sizeof(buf));
+    int len = read(fifo_fd, buf, sizeof(buf) - 1);
     if (len < 0) {
         mylog(log_warn, "fifo read failed len=%d,errno=%s\n", len, get_sock_error());
         return;
