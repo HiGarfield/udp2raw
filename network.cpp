@@ -1712,7 +1712,7 @@ int send_raw_tcp(raw_info_t &raw_info, const char *payload, int payloadlen) {  /
     tcph->check = 0;  // leave checksum 0 now, filled later by pseudo header
     tcph->urg_ptr = 0;
 
-    char *tcp_data = send_raw_tcp_buf + +tcph->doff * 4;
+    char *tcp_data = send_raw_tcp_buf + tcph->doff * 4;
 
     if (payload)
         memcpy(tcp_data, payload, payloadlen);
