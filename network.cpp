@@ -1492,7 +1492,7 @@ int peek_raw(raw_info_t &raw_info) {
                 if (recv_info.protocol != IPPROTO_ICMPV6) return -1;
             }
             struct my_icmphdr *icmph = (my_icmphdr *)payload;
-            if (payload_len < int(sizeof(my_udphdr)))
+            if (payload_len < int(sizeof(my_icmphdr)))
                 return -1;
             recv_info.src_port = ntohs(icmph->id);
             break;
