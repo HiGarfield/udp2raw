@@ -643,6 +643,11 @@ int server_event_loop() {
         bind_fd = socket(local_addr.get_type(), SOCK_DGRAM, 0);
     }
 
+    if (bind_fd < 0) {
+        mylog(log_fatal, "failed to create bind socket\n");
+        myexit(1);
+    }
+
     // struct sockaddr_in temp_bind_addr={0};
     // bzero(&temp_bind_addr, sizeof(temp_bind_addr));
 
