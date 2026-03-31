@@ -180,13 +180,14 @@ char *my_ip_t::get_str1() const {
     const char *ntop_ret;
     if (raw_ip_version == AF_INET6) {
         ntop_ret = inet_ntop(AF_INET6, &v6, res, max_addr_len);
-        assert(ntop_ret != 0);
     } else {
         assert(raw_ip_version == AF_INET);
         ntop_ret = inet_ntop(AF_INET, &v4, res, max_addr_len);
-        assert(ntop_ret != 0);
     }
-    (void)ntop_ret;
+    if (ntop_ret == NULL) {
+        mylog(log_fatal, "inet_ntop failed, errno=%s\n", strerror(errno));
+        myexit(-1);
+    }
     return res;
 }
 char *my_ip_t::get_str2() const {
@@ -194,13 +195,14 @@ char *my_ip_t::get_str2() const {
     const char *ntop_ret;
     if (raw_ip_version == AF_INET6) {
         ntop_ret = inet_ntop(AF_INET6, &v6, res, max_addr_len);
-        assert(ntop_ret != 0);
     } else {
         assert(raw_ip_version == AF_INET);
         ntop_ret = inet_ntop(AF_INET, &v4, res, max_addr_len);
-        assert(ntop_ret != 0);
     }
-    (void)ntop_ret;
+    if (ntop_ret == NULL) {
+        mylog(log_fatal, "inet_ntop failed, errno=%s\n", strerror(errno));
+        myexit(-1);
+    }
     return res;
 }
 

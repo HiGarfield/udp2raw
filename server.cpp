@@ -644,7 +644,7 @@ int server_event_loop() {
     }
 
     if (bind_fd < 0) {
-        mylog(log_fatal, "failed to create bind socket\n");
+        mylog(log_fatal, "failed to create bind socket, errno=%s\n", strerror(errno));
         myexit(1);
     }
 
