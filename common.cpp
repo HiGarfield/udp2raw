@@ -301,7 +301,7 @@ int inet_pton(int af, const char *src, void *dst) {
 
     ZeroMemory(&ss, sizeof(ss));
     /* stupid non-const API */
-    strncpy(src_copy, src, max_addr_len + 1);
+    strncpy(src_copy, src, max_addr_len);
     src_copy[max_addr_len] = 0;
 
     if (WSAStringToAddress(src_copy, af, NULL, (struct sockaddr *)&ss, &size) == 0) {
