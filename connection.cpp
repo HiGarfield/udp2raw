@@ -404,13 +404,13 @@ int send_safer(conn_info_t &conn_info, char type, const char *data, int len)  //
     packet_info_t &send_info = conn_info.raw_info.send_info;
     packet_info_t &recv_info = conn_info.raw_info.recv_info;
 
-    if (type != 'h' && type != 'd') {
-        mylog(log_warn, "first byte is not h or d  ,%x\n", type);
+    if (len < 0 || len > max_data_len) {
+        mylog(log_warn, "send_safer: invalid len %d\n", len);
         return -1;
     }
 
-    if (len < 0 || len > max_data_len) {
-        mylog(log_warn, "send_safer: invalid len %d\n", len);
+    if (type != 'h' && type != 'd') {
+        mylog(log_warn, "first byte is not h or d  ,%x\n", type);
         return -1;
     }
 
