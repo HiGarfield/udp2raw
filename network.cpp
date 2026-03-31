@@ -2814,11 +2814,15 @@ int try_to_list_and_bind2(int &fd, address_t address)  // try to bind to a port,
 
     if (::bind(fd, (struct sockaddr *)&address.inner, address.get_len()) != 0) {
         mylog(log_debug, "bind fail\n");
+        close(fd);
+        fd = -1;
         return -1;
     }
     if (raw_mode == mode_faketcp && !use_tcp_dummy_socket) {
         if (listen(fd, SOMAXCONN) != 0) {
             mylog(log_warn, "listen fail\n");
+            close(fd);
+            fd = -1;
             return -1;
         }
     }
