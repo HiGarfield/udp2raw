@@ -817,7 +817,7 @@ int client_event_loop() {
 
     udp_fd = socket(local_addr.get_type(), SOCK_DGRAM, IPPROTO_UDP);
     if (udp_fd < 0) {
-        mylog(log_fatal, "failed to create udp socket\n");
+        mylog(log_fatal, "failed to create udp socket, errno=%s\n", strerror(errno));
         myexit(1);
     }
     set_buf_size(udp_fd, socket_buf_size);

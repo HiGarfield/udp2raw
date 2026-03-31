@@ -403,8 +403,10 @@ int init_raw_socket() {
 
     int opt = 0;
     int setsockopt_ret = setsockopt(raw_send_fd, SOL_SOCKET, SO_RCVBUF, &opt, sizeof(opt));  // raw_send_fd is for send only, set its recv buffer to zero
-    assert(setsockopt_ret == 0);
-    (void)setsockopt_ret;
+    if (setsockopt_ret != 0) {
+        mylog(log_fatal, "SO_RCVBUF fail  opt=%d  errno=%s\n", opt, strerror(errno));
+        myexit(1);
+    }
 
     if (force_socket_buf) {
         if (setsockopt(raw_send_fd, SOL_SOCKET, SO_SNDBUFFORCE, &socket_buf_size, sizeof(socket_buf_size)) < 0) {
@@ -439,8 +441,10 @@ int init_raw_socket() {
 
         int index = -1;
         int ifindex_ret = init_ifindex(dev, raw_recv_fd, index);
-        assert(ifindex_ret == 0);
-        (void)ifindex_ret;
+        if (ifindex_ret != 0) {
+            mylog(log_fatal, "init_ifindex failed for dev [%s], errno=%s\n", dev, strerror(errno));
+            myexit(1);
+        }
 
         bind_address.sll_family = AF_PACKET;
         if (raw_ip_version == AF_INET)
@@ -508,14 +512,25 @@ int init_raw_socket() {
 
     int pcap_ret;
     pcap_ret = pcap_set_snaplen(pcap_handle, huge_data_len);
-    assert(pcap_ret == 0);
+    if (pcap_ret != 0) {
+        mylog(log_fatal, "pcap_set_snaplen failed with value %d: %s\n", pcap_ret, pcap_geterr(pcap_handle));
+        myexit(-1);
+    }
     pcap_ret = pcap_set_promisc(pcap_handle, 0);
-    assert(pcap_ret == 0);
+    if (pcap_ret != 0) {
+        mylog(log_fatal, "pcap_set_promisc failed with value %d: %s\n", pcap_ret, pcap_geterr(pcap_handle));
+        myexit(-1);
+    }
     pcap_ret = pcap_set_timeout(pcap_handle, 1);
-    assert(pcap_ret == 0);
+    if (pcap_ret != 0) {
+        mylog(log_fatal, "pcap_set_timeout failed with value %d: %s\n", pcap_ret, pcap_geterr(pcap_handle));
+        myexit(-1);
+    }
     pcap_ret = pcap_set_immediate_mode(pcap_handle, 1);
-    assert(pcap_ret == 0);
-    (void)pcap_ret;
+    if (pcap_ret != 0) {
+        mylog(log_fatal, "pcap_set_immediate_mode failed with value %d: %s\n", pcap_ret, pcap_geterr(pcap_handle));
+        myexit(-1);
+    }
 
     int ret = pcap_activate(pcap_handle);
     if (ret < 0) {
