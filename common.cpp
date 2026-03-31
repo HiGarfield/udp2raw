@@ -67,14 +67,14 @@ char *address_t::get_str() {
 }
 void address_t::to_str(char *s) {
     // static char res[max_addr_len];
-    char ip_addr[max_addr_len];
-    u32_t port;
+    char ip_addr[INET6_ADDRSTRLEN];
+    u32_t port = 0;
     const char *ret = 0;
     if (get_type() == AF_INET6) {
-        ret = inet_ntop(AF_INET6, &inner.ipv6.sin6_addr, ip_addr, max_addr_len);
+        ret = inet_ntop(AF_INET6, &inner.ipv6.sin6_addr, ip_addr, sizeof(ip_addr));
         port = inner.ipv6.sin6_port;
     } else if (get_type() == AF_INET) {
-        ret = inet_ntop(AF_INET, &inner.ipv4.sin_addr, ip_addr, max_addr_len);
+        ret = inet_ntop(AF_INET, &inner.ipv4.sin_addr, ip_addr, sizeof(ip_addr));
         port = inner.ipv4.sin_port;
     } else {
         assert(0 == 1);
@@ -88,7 +88,7 @@ void address_t::to_str(char *s) {
 
     port = ntohs(port);
 
-    ip_addr[max_addr_len - 1] = 0;
+    ip_addr[sizeof(ip_addr) - 1] = 0;
     if (get_type() == AF_INET6) {
         snprintf(s, max_addr_len, "[%s]:%u", ip_addr, (u32_t)port);
     } else {
