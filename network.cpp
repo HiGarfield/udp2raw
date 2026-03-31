@@ -878,7 +878,8 @@ bool interface_has_arp(const char *interface) {
     // int sock = socket(PF_INET6, SOCK_DGRAM, IPPROTO_IP);
     int sock = raw_send_fd;
     memset(&ifr, 0, sizeof(ifr));
-    strcpy(ifr.ifr_name, interface);
+    strncpy(ifr.ifr_name, interface, IFNAMSIZ - 1);
+    ifr.ifr_name[IFNAMSIZ - 1] = '\0';
     if (ioctl(sock, SIOCGIFFLAGS, &ifr) < 0) {
         // perror("SIOCGIFFLAGS");
         mylog(log_fatal, "ioctl(sock, SIOCGIFFLAGS, &ifr) failed for interface %s,errno %s\n", interface, strerror(errno));
