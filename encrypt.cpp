@@ -92,13 +92,20 @@ int my_init_keys(const char *user_passwd, int is_client) {
             // nop
         }
 
-        assert(hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_cipher_encrypt, strlen(info_cipher_encrypt), cipher_key_encrypt, cipher_key_len) == 0);
-        assert(hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_cipher_decrypt, strlen(info_cipher_decrypt), cipher_key_decrypt, cipher_key_len) == 0);
-        assert(hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_hmac_encrypt, strlen(info_hmac_encrypt), hmac_key_encrypt, hmac_key_len) == 0);
-        assert(hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_hmac_decrypt, strlen(info_hmac_decrypt), hmac_key_decrypt, hmac_key_len) == 0);
+        int hkdf_ret;
+        hkdf_ret = hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_cipher_encrypt, strlen(info_cipher_encrypt), cipher_key_encrypt, cipher_key_len);
+        assert(hkdf_ret == 0);
+        hkdf_ret = hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_cipher_decrypt, strlen(info_cipher_decrypt), cipher_key_decrypt, cipher_key_len);
+        assert(hkdf_ret == 0);
+        hkdf_ret = hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_hmac_encrypt, strlen(info_hmac_encrypt), hmac_key_encrypt, hmac_key_len);
+        assert(hkdf_ret == 0);
+        hkdf_ret = hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)info_hmac_decrypt, strlen(info_hmac_decrypt), hmac_key_decrypt, hmac_key_len);
+        assert(hkdf_ret == 0);
 
         const char *gro_info = "gro";
-        assert(hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)gro_info, strlen(gro_info), (unsigned char *)gro_xor, 256) == 0);
+        hkdf_ret = hkdf_sha256_expand(pbkdf2_output1, 32, (unsigned char *)gro_info, strlen(gro_info), (unsigned char *)gro_xor, 256);
+        assert(hkdf_ret == 0);
+        (void)hkdf_ret;
     }
 
     print_binary_chars(normal_key, 16);
