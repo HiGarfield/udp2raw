@@ -584,9 +584,11 @@ int do_test(testvector * tv)
 
 	if (memcmp(tv->dk, key, tv->dkLen) != 0) {
 		// Failed
+		free(key);
 		return -1;
 	}
 
+	free(key);
 	return 0;
 }
 
