@@ -177,22 +177,30 @@ bool my_ip_t::equal(const my_ip_t &b) const {
 }
 char *my_ip_t::get_str1() const {
     static char res[max_addr_len];
+    const char *ntop_ret;
     if (raw_ip_version == AF_INET6) {
-        assert(inet_ntop(AF_INET6, &v6, res, max_addr_len) != 0);
+        ntop_ret = inet_ntop(AF_INET6, &v6, res, max_addr_len);
+        assert(ntop_ret != 0);
     } else {
         assert(raw_ip_version == AF_INET);
-        assert(inet_ntop(AF_INET, &v4, res, max_addr_len) != 0);
+        ntop_ret = inet_ntop(AF_INET, &v4, res, max_addr_len);
+        assert(ntop_ret != 0);
     }
+    (void)ntop_ret;
     return res;
 }
 char *my_ip_t::get_str2() const {
     static char res[max_addr_len];
+    const char *ntop_ret;
     if (raw_ip_version == AF_INET6) {
-        assert(inet_ntop(AF_INET6, &v6, res, max_addr_len) != 0);
+        ntop_ret = inet_ntop(AF_INET6, &v6, res, max_addr_len);
+        assert(ntop_ret != 0);
     } else {
         assert(raw_ip_version == AF_INET);
-        assert(inet_ntop(AF_INET, &v4, res, max_addr_len) != 0);
+        ntop_ret = inet_ntop(AF_INET, &v4, res, max_addr_len);
+        assert(ntop_ret != 0);
     }
+    (void)ntop_ret;
     return res;
 }
 
