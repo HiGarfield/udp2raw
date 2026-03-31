@@ -369,6 +369,9 @@ struct queue_t {
     }
     void push_back(char *p, int len) {
         assert(!full());
+        if (len < 0 || len > huge_buf_len) {
+            return;
+        }
         memcpy(data[tail], p, len);
         data_len[tail] = len;
         tail++;

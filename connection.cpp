@@ -610,6 +610,10 @@ int recv_safer_multi(conn_info_t &conn_info, vector<char> &type_arr, vector<stri
             single_len = read_u16(recv_data);
             recv_len -= 2;
             recv_data += 2;
+            if (single_len == 0) {
+                mylog(log_debug, "illegal single_len 0(%d), dropped\n", single_len_no_xor);
+                break;
+            }
             if (single_len > recv_len) {
                 mylog(log_debug, "illegal single_len %d(%d), recv_len %d left,dropped\n", single_len, single_len_no_xor, recv_len);
                 break;
