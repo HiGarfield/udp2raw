@@ -1138,7 +1138,7 @@ int iptables_rule_init(const char *s, u32_t const_id, int keep) {
 
     string dummy = "";
     char const_id_str[100];
-    sprintf(const_id_str, "%x", const_id);
+    snprintf(const_id_str, sizeof(const_id_str), "%x", const_id);
 
     chain[0] = dummy + "udp2rawDwrW_" + const_id_str + "_C0";
     chain[1] = dummy + "udp2rawDwrW_" + const_id_str + "_C1";
