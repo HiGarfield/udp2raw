@@ -1159,6 +1159,10 @@ int send_raw_packet(raw_info_t &raw_info, const char *packet, int len) {
         char buf[buf_len];
         assert(pcap_header_captured == 1);
         assert(pcap_link_header_len != -1);
+        if (pcap_link_header_len + len > buf_len) {
+            mylog(log_warn, "send_raw_packet: pcap_link_header_len(%d) + len(%d) > buf_len(%d), dropped\n", pcap_link_header_len, len, buf_len);
+            return -1;
+        }
         memcpy(buf, pcap_header_buf, pcap_link_header_len);
         memcpy(buf + pcap_link_header_len, packet, len);
         // pthread_mutex_lock(&pcap_mutex); looks like this is not necessary, and it harms performance
