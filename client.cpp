@@ -816,6 +816,10 @@ int client_event_loop() {
     send_info.dst_port = remote_addr.get_port();
 
     udp_fd = socket(local_addr.get_type(), SOCK_DGRAM, IPPROTO_UDP);
+    if (udp_fd < 0) {
+        mylog(log_fatal, "failed to create udp socket\n");
+        myexit(1);
+    }
     set_buf_size(udp_fd, socket_buf_size);
 
     if (::bind(udp_fd, (struct sockaddr *)&local_addr.inner, local_addr.get_len()) == -1) {
