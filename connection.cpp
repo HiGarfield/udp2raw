@@ -290,8 +290,8 @@ int conn_manager_t::clear_inactive0() {
 int send_bare(raw_info_t &raw_info, const char *data, int len)  // send function with encryption but no anti replay,this is used when client and server verifys each other
 // you have to design the protocol carefully, so that you wont be affect by relay attack
 {
-    if (len < 0) {
-        mylog(log_debug, "input_len <0\n");
+    if (len < 0 || len > max_data_len) {
+        mylog(log_debug, "send_bare: invalid len %d\n", len);
         return -1;
     }
     packet_info_t &send_info = raw_info.send_info;
@@ -314,7 +314,9 @@ int send_bare(raw_info_t &raw_info, const char *data, int len)  // send function
     if (my_encrypt(send_data_buf, send_data_buf2, new_len) != 0) {
         return -1;
     }
-    send_raw0(raw_info, send_data_buf2, new_len);
+    if (send_raw0(raw_info, send_data_buf2, new_len) != 0) {
+        return -1;
+    }
     return 0;
 }
 int reserved_parse_bare(const char *input, int input_len, char *&data, int &len)  // a sub function used in recv_bare
@@ -404,6 +406,11 @@ int send_safer(conn_info_t &conn_info, char type, const char *data, int len)  //
 
     if (type != 'h' && type != 'd') {
         mylog(log_warn, "first byte is not h or d  ,%x\n", type);
+        return -1;
+    }
+
+    if (len < 0 || len > max_data_len) {
+        mylog(log_warn, "send_safer: invalid len %d\n", len);
         return -1;
     }
 
