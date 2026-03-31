@@ -290,8 +290,9 @@ int conn_manager_t::clear_inactive0() {
 int send_bare(raw_info_t &raw_info, const char *data, int len)  // send function with encryption but no anti replay,this is used when client and server verifys each other
 // you have to design the protocol carefully, so that you wont be affect by relay attack
 {
-    if (len < 0 || len > max_data_len) {
-        mylog(log_debug, "send_bare: invalid len %d\n", len);
+    const int bare_header_len = sizeof(iv_t) + sizeof(padding_t) + 1;
+    if (len < 0 || len > max_data_len - bare_header_len) {
+        mylog(log_debug, "send_bare: invalid len %d (max payload %d)\n", len, max_data_len - bare_header_len);
         return -1;
     }
     packet_info_t &send_info = raw_info.send_info;
@@ -309,7 +310,7 @@ int send_bare(raw_info_t &raw_info, const char *data, int len)  // send function
 
     send_data_buf[sizeof(iv) + sizeof(padding)] = 'b';
     memcpy(send_data_buf + sizeof(iv) + sizeof(padding) + 1, data, len);
-    int new_len = len + sizeof(iv) + sizeof(padding) + 1;
+    int new_len = len + bare_header_len;
 
     if (my_encrypt(send_data_buf, send_data_buf2, new_len) != 0) {
         return -1;
@@ -404,8 +405,9 @@ int send_safer(conn_info_t &conn_info, char type, const char *data, int len)  //
     packet_info_t &send_info = conn_info.raw_info.send_info;
     packet_info_t &recv_info = conn_info.raw_info.recv_info;
 
-    if (len < 0 || len > max_data_len) {
-        mylog(log_warn, "send_safer: invalid len %d\n", len);
+    const int safer_header_len = static_cast<int>(sizeof(anti_replay_seq_t) + sizeof(my_id_t) * 2 + 2);
+    if (len < 0 || len > max_data_len - safer_header_len) {
+        mylog(log_warn, "send_safer: invalid len %d (max payload %d)\n", len, max_data_len - safer_header_len);
         return -1;
     }
 
