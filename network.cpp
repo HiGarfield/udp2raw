@@ -402,7 +402,9 @@ int init_raw_socket() {
     }
 
     int opt = 0;
-    assert(setsockopt(raw_send_fd, SOL_SOCKET, SO_RCVBUF, &opt, sizeof(opt)) == 0);  // raw_send_fd is for send only, set its recv buffer to zero
+    int setsockopt_ret = setsockopt(raw_send_fd, SOL_SOCKET, SO_RCVBUF, &opt, sizeof(opt));  // raw_send_fd is for send only, set its recv buffer to zero
+    assert(setsockopt_ret == 0);
+    (void)setsockopt_ret;
 
     if (force_socket_buf) {
         if (setsockopt(raw_send_fd, SOL_SOCKET, SO_SNDBUFFORCE, &socket_buf_size, sizeof(socket_buf_size)) < 0) {
@@ -436,7 +438,9 @@ int init_raw_socket() {
         memset(&bind_address, 0, sizeof(bind_address));
 
         int index = -1;
-        assert(init_ifindex(dev, raw_recv_fd, index) == 0);
+        int ifindex_ret = init_ifindex(dev, raw_recv_fd, index);
+        assert(ifindex_ret == 0);
+        (void)ifindex_ret;
 
         bind_address.sll_family = AF_PACKET;
         if (raw_ip_version == AF_INET)
@@ -502,10 +506,16 @@ int init_raw_socket() {
         myexit(-1);
     }
 
-    assert(pcap_set_snaplen(pcap_handle, huge_data_len) == 0);
-    assert(pcap_set_promisc(pcap_handle, 0) == 0);
-    assert(pcap_set_timeout(pcap_handle, 1) == 0);
-    assert(pcap_set_immediate_mode(pcap_handle, 1) == 0);
+    int pcap_ret;
+    pcap_ret = pcap_set_snaplen(pcap_handle, huge_data_len);
+    assert(pcap_ret == 0);
+    pcap_ret = pcap_set_promisc(pcap_handle, 0);
+    assert(pcap_ret == 0);
+    pcap_ret = pcap_set_timeout(pcap_handle, 1);
+    assert(pcap_ret == 0);
+    pcap_ret = pcap_set_immediate_mode(pcap_handle, 1);
+    assert(pcap_ret == 0);
+    (void)pcap_ret;
 
     int ret = pcap_activate(pcap_handle);
     if (ret < 0) {
