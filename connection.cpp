@@ -474,8 +474,7 @@ int send_data_safer(conn_info_t &conn_info, const char *data, int len, u32_t con
 
     memcpy(send_data_buf + sizeof(n_conv_num), data, len);
     int new_len = len + sizeof(n_conv_num);
-    send_safer(conn_info, 'd', send_data_buf, new_len);
-    return 0;
+    return send_safer(conn_info, 'd', send_data_buf, new_len);
 }
 int reserved_parse_safer(conn_info_t &conn_info, const char *input, int input_len, char &type, char *&data, int &len)  // subfunction for recv_safer,allow overlap
 {
