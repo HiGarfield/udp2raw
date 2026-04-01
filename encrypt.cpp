@@ -172,8 +172,9 @@ void simple_hash(unsigned char *str, int len, unsigned char res[8])  // djb2+ sd
     u32_t hash = 5381;
     u32_t hash2 = 0;
     int c;
-    int i = 0;
-    while (c = *str++, i++ != len) {
+    int i;
+    for (i = 0; i < len; i++) {
+        c = str[i];
         // hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
         hash = ((hash << 5) + hash) ^ c; /* (hash * 33) ^ c */
         hash2 = c + (hash2 << 6) + (hash2 << 16) - hash2;
