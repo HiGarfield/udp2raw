@@ -37,7 +37,7 @@ void log0(const char* file, const char* function, int line, int level, const cha
     // printf(log_color[level]);
     fflush(stdout);
 
-    if (log_level == log_fatal) {
+    if (level == log_fatal) {
         about_to_exit = 1;
     }
 }
