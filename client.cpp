@@ -570,6 +570,10 @@ void async_cb(struct ev_loop *loop, struct ev_async *watcher, int revents) {
 
         pcap_header_captured = 1;
         assert(pcap_link_header_len != -1);
+        if (len > (int)sizeof(pcap_header_buf)) {
+            mylog(log_warn, "pcap captured packet len %d exceeds pcap_header_buf size %d, clamped\n", len, (int)sizeof(pcap_header_buf));
+            len = (int)sizeof(pcap_header_buf);
+        }
         memcpy(pcap_header_buf, p, len);
 
         log_bare(log_info, "link level header captured:\n");
