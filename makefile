@@ -38,7 +38,8 @@ LIBS += $(if $(filter Linux,$(TARGET_OS)),-lrt)
 SOURCES := $(COMMON) $(wildcard lib/aes_faster_c/*.cpp)
 SOURCES_AES_ACC = $(COMMON) $(wildcard lib/aes_acc/aes*.c) lib/aes_acc/asm/$@.S
 AES_ACC_TARGETS := $(basename $(notdir $(wildcard lib/aes_acc/asm/*.S)))
-NAME := udp2raw
+NAME := udp2raw$(if $(filter Windows,$(TARGET_OS)),.exe,)
+RM_F := $(if $(filter Windows,$(TARGET_OS)),del /f /q,rm -f)
 COMPILE_OPT := -I. $(LIBS) $(FLAGS) $(EXTRA_FLAGS) -o $(NAME)
 
 # Define targets
@@ -58,8 +59,8 @@ pcap: git_version
 
 # Generate git version header
 git_version:
-	@printf 'const char *gitversion = "%s";\n' "$(UDP2RAW_GIT_VER)" > git_version.h
+	$(file > git_version.h,const char *gitversion = "$(UDP2RAW_GIT_VER)";)
 
 # Clean target
 clean:
-	-$(RM) $(NAME) git_version.h
+	-$(RM_F) $(NAME) git_version.h
