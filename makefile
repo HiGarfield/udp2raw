@@ -10,7 +10,6 @@ $(info TARGET_OS = $(TARGET_OS))
 
 # Get Git version
 UDP2RAW_GIT_VER ?= $(shell git rev-parse HEAD || echo unknown)
-UDP2RAW_GIT_VER_CODE := "const char *gitversion = \"$(UDP2RAW_GIT_VER)\";"
 $(info UDP2RAW_GIT_VER = $(UDP2RAW_GIT_VER))
 
 # Compiler flags
@@ -59,7 +58,7 @@ pcap: git_version
 
 # Generate git version header
 git_version:
-	@echo $(UDP2RAW_GIT_VER_CODE) > git_version.h
+	@printf 'const char *gitversion = "%s";\n' "$(UDP2RAW_GIT_VER)" > git_version.h
 
 # Clean target
 clean:
