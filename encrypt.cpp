@@ -145,11 +145,11 @@ unsigned int crc32h(unsigned char *message, int len) {
     while (i != len) {  // Get next byte.
         byte = message[i];
         crc = crc ^ byte;
-        c = ((crc << 31 >> 31) & g7) ^ ((crc << 30 >> 31) & g6) ^
-            ((crc << 29 >> 31) & g5) ^ ((crc << 28 >> 31) & g4) ^
-            ((crc << 27 >> 31) & g3) ^ ((crc << 26 >> 31) & g2) ^
-            ((crc << 25 >> 31) & g1) ^ ((crc << 24 >> 31) & g0);
-        crc = ((unsigned)crc >> 8) ^ c;
+        c = (-(crc & 1U) & g7) ^ (-((crc >> 1) & 1U) & g6) ^
+            (-((crc >> 2) & 1U) & g5) ^ (-((crc >> 3) & 1U) & g4) ^
+            (-((crc >> 4) & 1U) & g3) ^ (-((crc >> 5) & 1U) & g2) ^
+            (-((crc >> 6) & 1U) & g1) ^ (-((crc >> 7) & 1U) & g0);
+        crc = (crc >> 8) ^ c;
         i = i + 1;
     }
     return ~crc;
