@@ -134,8 +134,8 @@ int my_init_keys(const char *user_passwd, int is_client) {
  *  this function comes from  http://www.hackersdelight.org/hdcodetxt/crc.c.txt
  */
 unsigned int crc32h(unsigned char *message, int len) {
-    int i, crc;
-    unsigned int byte, c;
+    int i;
+    unsigned int crc, byte, c;
     const unsigned int g0 = 0xEDB88320, g1 = g0 >> 1,
                        g2 = g0 >> 2, g3 = g0 >> 3, g4 = g0 >> 4, g5 = g0 >> 5,
                        g6 = (g0 >> 6) ^ g0, g7 = ((g0 >> 6) ^ g0) >> 1;
@@ -373,7 +373,10 @@ int cipher_aes128cbc_encrypt(const char *data, char *output, int &len, char *key
 }
 int cipher_aes128cfb_encrypt(const char *data, char *output, int &len, char *key) {
     static int first_time = 1;
-    assert(len >= 16);
+    if (len < 16) {
+        mylog(log_warn, "cipher_aes128cfb_encrypt: input length %d is less than 16 bytes\n", len);
+        return -1;
+    }
 
     char buf[buf_len];
     memcpy(buf, data, len);  // TODO inefficient code

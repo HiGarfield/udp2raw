@@ -449,7 +449,7 @@ void process_arg(int argc, char *argv[])  // process all options
                 break;
             case 'k':
                 mylog(log_debug, "parsing key option\n");
-                sscanf(optarg, "%s", key_string);
+                sscanf(optarg, "%999s", key_string);
                 break;
             case 1:
                 mylog(log_debug, "option_index: %d\n", option_index);
@@ -766,7 +766,7 @@ void pre_process_arg(int argc, char *argv[])  // mainly for load conf file
         if (strcmp(argv[i], "--conf-file") == 0) {
             count++;
             pos = i;
-            if (i == argc) {
+            if (i + 1 >= argc) {
                 mylog(log_fatal, "--conf-file need a parameter\n");
                 myexit(-1);
             }
