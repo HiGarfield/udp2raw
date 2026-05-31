@@ -107,8 +107,12 @@ int process_lower_level_arg()  // handle --lower-level option
     lower_level = 1;
     u32_t hw[6];
     memset(hw, 0, sizeof(hw));
-    sscanf(optarg, "%99[^#]#%x:%x:%x:%x:%x:%x", if_name, &hw[0], &hw[1], &hw[2],
-           &hw[3], &hw[4], &hw[5]);
+    if (sscanf(optarg, "%99[^#]#%x:%x:%x:%x:%x:%x", if_name, &hw[0], &hw[1], &hw[2],
+               &hw[3], &hw[4], &hw[5]) != 7) {
+        mylog(log_fatal,
+              "lower-level parameter invaild,check help page for format\n");
+        myexit(-1);
+    }
 
     mylog(log_warn,
           "make sure this is correct:   if_name=<%s>  dest_mac_adress=<%02x:%02x:%02x:%02x:%02x:%02x>  \n",
@@ -576,7 +580,10 @@ void process_arg(int argc, char *argv[])  // process all options
                     debug_flag = 1;
                     // enable_log_color=0;
                 } else if (strcmp(long_options[option_index].name, "dev") == 0) {
-                    sscanf(optarg, "%99s", dev);
+                    if (snprintf(dev, sizeof(dev), "%s", optarg) >= int(sizeof(dev))) {
+                        mylog(log_fatal, "device name is too long (exceeds %d chars): %s\n", int(sizeof(dev)) - 1, optarg);
+                        myexit(-1);
+                    }
                     // enable_log_color=0;
                     mylog(log_info, "dev=[%s]\n", dev);
                 } else if (strcmp(long_options[option_index].name, "debug-resend") == 0) {
