@@ -576,7 +576,7 @@ void process_arg(int argc, char *argv[])  // process all options
                     debug_flag = 1;
                     // enable_log_color=0;
                 } else if (strcmp(long_options[option_index].name, "dev") == 0) {
-                    sscanf(optarg, "%s", dev);
+                    sscanf(optarg, "%99s", dev);
                     // enable_log_color=0;
                     mylog(log_info, "dev=[%s]\n", dev);
                 } else if (strcmp(long_options[option_index].name, "debug-resend") == 0) {
