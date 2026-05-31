@@ -157,7 +157,7 @@ int server_on_raw_recv_ready(conn_info_t &conn_info, char *ip_port, char type, c
 
             if (ret != 0) {
                 mylog(log_warn, "[%s]add udp_fd error\n", ip_port);
-                close(new_udp_fd);
+                fd_manager.fd64_close(new_udp_fd64);
                 return -1;
             }
 
