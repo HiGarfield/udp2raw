@@ -107,7 +107,7 @@ int process_lower_level_arg()  // handle --lower-level option
     lower_level = 1;
     u32_t hw[6];
     memset(hw, 0, sizeof(hw));
-    sscanf(optarg, "%[^#]#%x:%x:%x:%x:%x:%x", if_name, &hw[0], &hw[1], &hw[2],
+    sscanf(optarg, "%99[^#]#%x:%x:%x:%x:%x:%x", if_name, &hw[0], &hw[1], &hw[2],
            &hw[3], &hw[4], &hw[5]);
 
     mylog(log_warn,
