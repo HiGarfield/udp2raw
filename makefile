@@ -58,13 +58,15 @@ endif
 
 SOURCES := $(COMMON) $(wildcard lib/aes_faster_c/*.cpp)
 ifeq ($(USE_OPENSSL), 1)
-  # Add OpenSSL wrapper when USE_OPENSSL=1, exclude built-in crypto when not needed
+  # When OpenSSL is enabled: exclude built-in AES implementation
+  # Note: lib/openssl_wrapper.cpp is already included via COMMON (wildcard lib/*.cpp)
   SOURCES := $(filter-out lib/aes_faster_c/aes.cpp lib/aes_faster_c/wrapper.cpp, $(SOURCES))
 endif
 
 SOURCES_AES_ACC = $(COMMON) $(wildcard lib/aes_acc/aes*.c) lib/aes_acc/asm/$@.S
 ifeq ($(USE_OPENSSL), 1)
-  # For AES_ACC builds with OpenSSL, exclude built-in AES implementations
+  # For AES_ACC builds with OpenSSL: exclude built-in AES implementations
+  # Note: lib/openssl_wrapper.cpp is already included via COMMON (wildcard lib/*.cpp)
   SOURCES_AES_ACC := $(filter-out lib/aes_acc/aesacc.c lib/aes_acc/aesni.c lib/aes_acc/aesarm.c, $(SOURCES_AES_ACC))
 endif
 

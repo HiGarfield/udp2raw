@@ -10,7 +10,8 @@
 static inline void sha1_hmac(const unsigned char *key, int keylen, const unsigned char *input, int ilen, unsigned char output[20]) {
     openssl_hmac_sha1(key, keylen, input, ilen, output);
 }
-// Still need original implementations for PBKDF2
+// sha1 is still needed by PBKDF2 implementation which uses it internally
+// PBKDF2-HMAC-SHA1 relies on the built-in sha1() function
 void sha1(const unsigned char *input, int ilen, unsigned char output[20]);
 void PKCS5_PBKDF2_HMAC_SHA1(const unsigned char *password, size_t plen,
     const unsigned char *salt, size_t slen,

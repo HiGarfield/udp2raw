@@ -228,7 +228,8 @@ int openssl_hmac_sha1(const unsigned char *key, int key_len,
     if (!ctx) return -1;
     
     OSSL_PARAM params[2];
-    params[0] = OSSL_PARAM_construct_utf8_string("digest", (char*)"SHA1", 0);
+    const char *digest_name = "SHA1";
+    params[0] = OSSL_PARAM_construct_utf8_string("digest", const_cast<char*>(digest_name), 0);
     params[1] = OSSL_PARAM_construct_end();
     
     if (1 != EVP_MAC_init(ctx, key, key_len, params)) {
