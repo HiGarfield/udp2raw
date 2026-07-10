@@ -10,6 +10,8 @@
 
 #ifdef USE_OPENSSL
 // Use OpenSSL implementation
+#include <limits.h>
+#include <stdlib.h>
 #include "openssl_wrapper.h"
 
 static inline void AES_ECB_encrypt_buffer(const uint8_t* input, const uint8_t* key, uint8_t *output) {

@@ -13,6 +13,9 @@
 #include <openssl/params.h>
 #endif
 
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+#include <openssl/params.h>
+#endif
 // AES-128-CBC encryption using OpenSSL
 int openssl_aes_cbc_encrypt(const unsigned char *input, unsigned char *output, 
                             int length, const unsigned char *key, const unsigned char *iv) {
