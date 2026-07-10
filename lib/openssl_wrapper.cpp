@@ -227,9 +227,10 @@ int openssl_hmac_sha1(const unsigned char *key, int key_len,
     EVP_MAC_free(mac);
     if (!ctx) return -1;
     
+    // OSSL_PARAM_construct_utf8_string expects non-const char*, use mutable buffer
+    char digest_name[] = "SHA1";
     OSSL_PARAM params[2];
-    const char *digest_name = "SHA1";
-    params[0] = OSSL_PARAM_construct_utf8_string("digest", const_cast<char*>(digest_name), 0);
+    params[0] = OSSL_PARAM_construct_utf8_string("digest", digest_name, 0);
     params[1] = OSSL_PARAM_construct_end();
     
     if (1 != EVP_MAC_init(ctx, key, key_len, params)) {
@@ -255,7 +256,8 @@ int openssl_hmac_sha1(const unsigned char *key, int key_len,
     unsigned int len = 20;
     
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
-    // OpenSSL 1.1.0 and later
+    // OpenSSL 1.1.0 and later: HMAC_CTX is opaque and must be heap-allocated via HMAC_CTX_new()
+    // This is required by the OpenSSL 1.1.0+ API design
     HMAC_CTX *ctx = HMAC_CTX_new();
     if (!ctx) return -1;
     
@@ -276,7 +278,8 @@ int openssl_hmac_sha1(const unsigned char *key, int key_len,
     
     HMAC_CTX_free(ctx);
 #else
-    // OpenSSL 1.0.x
+    // OpenSSL 1.0.x: HMAC_CTX is not opaque and can be stack-allocated
+    // Using stack allocation here to avoid malloc overhead for older OpenSSL versions
     HMAC_CTX ctx;
     HMAC_CTX_init(&ctx);
     
