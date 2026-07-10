@@ -8,7 +8,7 @@
 #include "openssl_wrapper.h"
 // When using OpenSSL, provide wrapper for sha1_hmac
 static inline void sha1_hmac(const unsigned char *key, int keylen, const unsigned char *input, int ilen, unsigned char output[20]) {
-    openssl_hmac_sha1(key, keylen, input, ilen, output);
+    if (openssl_hmac_sha1(key, keylen, input, ilen, output) != 0) abort();
 }
 // sha1 is still needed by PBKDF2 implementation which uses it internally
 // PBKDF2-HMAC-SHA1 relies on the built-in sha1() function

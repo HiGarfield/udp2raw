@@ -14,7 +14,8 @@ UDP2RAW_GIT_VER_CODE := "const char *gitversion = \"$(UDP2RAW_GIT_VER)\";"
 $(info UDP2RAW_GIT_VER = $(UDP2RAW_GIT_VER))
 
 # OpenSSL support detection
-USE_OPENSSL ?= 1
+OPENSSL_AVAILABLE := $(shell pkg-config --exists openssl && echo 1 || echo 0)
+USE_OPENSSL ?= $(OPENSSL_AVAILABLE)
 ifeq ($(USE_OPENSSL), 1)
   OPENSSL_CFLAGS := $(shell pkg-config --cflags openssl 2>/dev/null || echo "-I/usr/include")
   OPENSSL_LIBS := $(shell pkg-config --libs openssl 2>/dev/null || echo "-lssl -lcrypto")

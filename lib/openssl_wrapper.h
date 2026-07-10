@@ -8,6 +8,7 @@
 
 #ifdef USE_OPENSSL
 
+#include <stdlib.h>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/err.h>
