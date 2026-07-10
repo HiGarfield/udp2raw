@@ -218,6 +218,39 @@ int openssl_aes_ecb_decrypt(const unsigned char *input, const unsigned char *key
 int openssl_hmac_sha1(const unsigned char *key, int key_len,
                      const unsigned char *data, int data_len,
                      unsigned char *output) {
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+    // OpenSSL 3.0 and later - use EVP_MAC API
+    EVP_MAC *mac = EVP_MAC_fetch(NULL, "HMAC", NULL);
+    if (!mac) return -1;
+    
+    EVP_MAC_CTX *ctx = EVP_MAC_CTX_new(mac);
+    EVP_MAC_free(mac);
+    if (!ctx) return -1;
+    
+    OSSL_PARAM params[2];
+    params[0] = OSSL_PARAM_construct_utf8_string("digest", (char*)"SHA1", 0);
+    params[1] = OSSL_PARAM_construct_end();
+    
+    if (1 != EVP_MAC_init(ctx, key, key_len, params)) {
+        EVP_MAC_CTX_free(ctx);
+        return -1;
+    }
+    
+    if (1 != EVP_MAC_update(ctx, data, data_len)) {
+        EVP_MAC_CTX_free(ctx);
+        return -1;
+    }
+    
+    size_t len = 20;
+    if (1 != EVP_MAC_final(ctx, output, &len, 20)) {
+        EVP_MAC_CTX_free(ctx);
+        return -1;
+    }
+    
+    EVP_MAC_CTX_free(ctx);
+    return (len == 20) ? 0 : -1;
+#else
+    // OpenSSL 1.1.0 and later (but before 3.0) OR OpenSSL 1.0.x
     unsigned int len = 20;
     
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
@@ -265,6 +298,7 @@ int openssl_hmac_sha1(const unsigned char *key, int key_len,
 #endif
     
     return (len == 20) ? 0 : -1;
+#endif
 }
 
 // MD5 using OpenSSL
