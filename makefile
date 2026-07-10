@@ -13,9 +13,26 @@ UDP2RAW_GIT_VER ?= $(shell git rev-parse HEAD || echo unknown)
 UDP2RAW_GIT_VER_CODE := "const char *gitversion = \"$(UDP2RAW_GIT_VER)\";"
 $(info UDP2RAW_GIT_VER = $(UDP2RAW_GIT_VER))
 
+# OpenSSL support detection
+USE_OPENSSL ?= 1
+ifeq ($(USE_OPENSSL), 1)
+  OPENSSL_CFLAGS := $(shell pkg-config --cflags openssl 2>/dev/null || echo "-I/usr/include")
+  OPENSSL_LIBS := $(shell pkg-config --libs openssl 2>/dev/null || echo "-lssl -lcrypto")
+  $(info OpenSSL support: enabled)
+  $(info OPENSSL_CFLAGS = $(OPENSSL_CFLAGS))
+  $(info OPENSSL_LIBS = $(OPENSSL_LIBS))
+else
+  OPENSSL_CFLAGS :=
+  OPENSSL_LIBS :=
+  $(info OpenSSL support: disabled)
+endif
+
 # Compiler flags
 FLAGS := -std=c++11 -Wall -Wextra -Wno-unused-variable -Wno-unused-parameter \
           -Wno-missing-field-initializers
+ifeq ($(USE_OPENSSL), 1)
+  FLAGS += -DUSE_OPENSSL $(OPENSSL_CFLAGS)
+endif
 EXTRA_FLAGS := -Os -s
 EXTRA_FLAGS += $(if $(filter MacOS,$(TARGET_OS)),,-ffunction-sections -Wl,--gc-sections)
 EXTRA_FLAGS += $(if $(filter Windows,$(TARGET_OS)),-static,)
@@ -35,9 +52,22 @@ COMMON := $(wildcard *.cpp lib/*.cpp)
 LIBS := -lpthread -isystem libev
 LIBS += $(if $(filter Windows,$(TARGET_OS)),-lws2_32)
 LIBS += $(if $(filter Linux,$(TARGET_OS)),-lrt)
+ifeq ($(USE_OPENSSL), 1)
+  LIBS += $(OPENSSL_LIBS)
+endif
 
 SOURCES := $(COMMON) $(wildcard lib/aes_faster_c/*.cpp)
+ifeq ($(USE_OPENSSL), 1)
+  # Add OpenSSL wrapper when USE_OPENSSL=1, exclude built-in crypto when not needed
+  SOURCES := $(filter-out lib/aes_faster_c/aes.cpp lib/aes_faster_c/wrapper.cpp, $(SOURCES))
+endif
+
 SOURCES_AES_ACC = $(COMMON) $(wildcard lib/aes_acc/aes*.c) lib/aes_acc/asm/$@.S
+ifeq ($(USE_OPENSSL), 1)
+  # For AES_ACC builds with OpenSSL, exclude built-in AES implementations
+  SOURCES_AES_ACC := $(filter-out lib/aes_acc/aesacc.c lib/aes_acc/aesni.c lib/aes_acc/aesarm.c, $(SOURCES_AES_ACC))
+endif
+
 AES_ACC_TARGETS := $(basename $(notdir $(wildcard lib/aes_acc/asm/*.S)))
 NAME := udp2raw
 COMPILE_OPT := -I. $(LIBS) $(FLAGS) $(EXTRA_FLAGS) -o $(NAME)
