@@ -228,7 +228,10 @@ int process_log_level(int argc, char *argv[])  // process  --log-level and --dis
     for (i = 0; i < argc; i++) {
         if (strcmp(argv[i], "--log-level") == 0) {
             if (i < argc - 1) {
-                sscanf(argv[i + 1], "%d", &log_level);
+                if (sscanf(argv[i + 1], "%d", &log_level) != 1) {
+                    mylog(log_fatal, "invalid value for --log-level\n");
+                    myexit(-1);
+                }
                 if (0 <= log_level && log_level < log_end) {
                 } else {
                     log_bare(log_fatal, "invalid log_level\n");
@@ -472,7 +475,10 @@ void process_arg(int argc, char *argv[])  // process all options
                     force_source_ip = 1;
                 } else if (strcmp(long_options[option_index].name, "source-port") == 0) {
                     mylog(log_debug, "parsing long option :source-port\n");
-                    sscanf(optarg, "%d", &source_port);
+                    if (sscanf(optarg, "%d", &source_port) != 1) {
+                        mylog(log_fatal, "invalid value for --source-port\n");
+                        myexit(-1);
+                    }
                     mylog(log_info, "source: %d\n", source_port);
                     force_source_port = 1;
                 } else if (strcmp(long_options[option_index].name, "raw-mode") == 0) {
@@ -613,14 +619,20 @@ void process_arg(int argc, char *argv[])  // process all options
                         myexit(-1);
                     }
                 } else if (strcmp(long_options[option_index].name, "seq-mode") == 0) {
-                    sscanf(optarg, "%d", &seq_mode);
+                    if (sscanf(optarg, "%d", &seq_mode) != 1) {
+                        mylog(log_fatal, "invalid value for --seq-mode\n");
+                        myexit(-1);
+                    }
                     if (0 <= seq_mode && seq_mode <= max_seq_mode) {
                     } else {
                         mylog(log_fatal, "seq_mode value must be  0,1,or 2 \n");
                         myexit(-1);
                     }
                 } else if (strcmp(long_options[option_index].name, "random-drop") == 0) {
-                    sscanf(optarg, "%d", &random_drop);
+                    if (sscanf(optarg, "%d", &random_drop) != 1) {
+                        mylog(log_fatal, "invalid value for --random-drop\n");
+                        myexit(-1);
+                    }
                     if (random_drop < 0 || random_drop > 10000) {
                         mylog(log_fatal, "random_drop must be between 0 10000 \n");
                         myexit(-1);
@@ -637,27 +649,45 @@ void process_arg(int argc, char *argv[])  // process all options
                 } else if (strcmp(long_options[option_index].name, "conf-file") == 0) {
                     mylog(log_info, "configuration loaded from %s\n", optarg);
                 } else if (strcmp(long_options[option_index].name, "hb-mode") == 0) {
-                    sscanf(optarg, "%d", &hb_mode);
+                    if (sscanf(optarg, "%d", &hb_mode) != 1) {
+                        mylog(log_fatal, "invalid value for --hb-mode\n");
+                        myexit(-1);
+                    }
                     assert(hb_mode == 0 || hb_mode == 1);
                     mylog(log_info, "hb_mode =%d \n", hb_mode);
                 } else if (strcmp(long_options[option_index].name, "hb-len") == 0) {
-                    sscanf(optarg, "%d", &hb_len);
+                    if (sscanf(optarg, "%d", &hb_len) != 1) {
+                        mylog(log_fatal, "invalid value for --hb-len\n");
+                        myexit(-1);
+                    }
                     assert(hb_len >= 0 && hb_len <= 1500);
                     mylog(log_info, "hb_len =%d \n", hb_len);
                 } else if (strcmp(long_options[option_index].name, "mtu-warn") == 0) {
-                    sscanf(optarg, "%d", &mtu_warn);
+                    if (sscanf(optarg, "%d", &mtu_warn) != 1) {
+                        mylog(log_fatal, "invalid value for --mtu-warn\n");
+                        myexit(-1);
+                    }
                     assert(mtu_warn > 0);
                     mylog(log_info, "mtu_warn=%d \n", mtu_warn);
                 } else if (strcmp(long_options[option_index].name, "max-rst-to-show") == 0) {
-                    sscanf(optarg, "%d", &max_rst_to_show);
+                    if (sscanf(optarg, "%d", &max_rst_to_show) != 1) {
+                        mylog(log_fatal, "invalid value for --max-rst-to-show\n");
+                        myexit(-1);
+                    }
                     assert(max_rst_to_show >= -1);
                     mylog(log_info, "max_rst_to_show=%d \n", max_rst_to_show);
                 } else if (strcmp(long_options[option_index].name, "max-rst-allowed") == 0) {
-                    sscanf(optarg, "%d", &max_rst_allowed);
+                    if (sscanf(optarg, "%d", &max_rst_allowed) != 1) {
+                        mylog(log_fatal, "invalid value for --max-rst-allowed\n");
+                        myexit(-1);
+                    }
                     assert(max_rst_allowed >= -1);
                     mylog(log_info, "max_rst_allowed=%d \n", max_rst_allowed);
                 } else if (strcmp(long_options[option_index].name, "set-ttl") == 0) {
-                    sscanf(optarg, "%d", &ttl_value);
+                    if (sscanf(optarg, "%d", &ttl_value) != 1) {
+                        mylog(log_fatal, "invalid value for --set-ttl\n");
+                        myexit(-1);
+                    }
                     assert(ttl_value >= 0 && ttl_value <= 255);
                     mylog(log_info, "ttl_value=%d\n", ttl_value);
                 }
