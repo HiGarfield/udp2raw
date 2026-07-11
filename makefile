@@ -108,7 +108,7 @@ $(eval $(call FLAVOR_build,debug,$(MP) $(PCAP_INC) $(PCAP_LIB)))
 # ---- AES hardware-accelerated variants ----
 # Each builds the binary with its matching asm implementation.
 define AES_ACC_build
-$(1)_OBJS := $$(addprefix .obj/aes_$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_FASTER_SRCS:.cpp=.o) $$(AES_ACC_SRCS:.c=.o)) .obj/aes_$(1)/lib/aes_acc/asm/$(1).S.o
+$(1)_OBJS := $$(addprefix .obj/aes_$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_ACC_SRCS:.c=.o)) .obj/aes_$(1)/lib/aes_acc/asm/$(1).S.o
 .obj/aes_$(1)/%.o: %.cpp | git_version.h
 	@mkdir -p $$(dir $$@)
 	$$(CXX) $$(CXXFLAGS) $$(OPT_FLAGS) -c $$< -o $$@
@@ -120,8 +120,8 @@ $(1)_OBJS := $$(addprefix .obj/aes_$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_FASTER_S
 .obj/aes_$(1)/lib/aes_acc/asm/$(1).S.o: lib/aes_acc/asm/$(1).S | git_version.h
 	@mkdir -p $$(dir $$@)
 	$$(CXX) $$(CXXFLAGS) $$(OPT_FLAGS) -c $$< -o $$@
-$(1): $$(addprefix .obj/aes_$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_FASTER_SRCS:.cpp=.o) $$(AES_ACC_SRCS:.c=.o)) .obj/aes_$(1)/lib/aes_acc/asm/$(1).S.o git_version.h
-	$$(CXX) $$(addprefix .obj/aes_$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_FASTER_SRCS:.cpp=.o) $$(AES_ACC_SRCS:.c=.o)) .obj/aes_$(1)/lib/aes_acc/asm/$(1).S.o $$(LDFLAGS_BASE) $$(STRIP_FLAG) $$(LIBS) -o $$(NAME)
+$(1): $$(addprefix .obj/aes_$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_ACC_SRCS:.c=.o)) .obj/aes_$(1)/lib/aes_acc/asm/$(1).S.o git_version.h
+	$$(CXX) $$(addprefix .obj/aes_$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_ACC_SRCS:.c=.o)) .obj/aes_$(1)/lib/aes_acc/asm/$(1).S.o $$(LDFLAGS_BASE) $$(STRIP_FLAG) $$(LIBS) -o $$(NAME)
 endef
 
 $(foreach t,$(AES_ACC_TARGETS),$(eval $(call AES_ACC_build,$(t))))
