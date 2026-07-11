@@ -631,8 +631,10 @@ void fifo_cb(struct ev_loop *loop, struct ev_io *watcher, int revents) {
         return;
     }
     buf[len] = 0;
-    while (len >= 1 && buf[len - 1] == '\n')
+    while (len >= 1 && buf[len - 1] == '\n') {
         buf[len - 1] = 0;
+        len--;
+    }
     mylog(log_info, "got data from fifo,len=%d,s=[%s]\n", len, buf);
     if (strcmp(buf, "reconnect") == 0) {
         mylog(log_info, "received command: reconnect\n");
