@@ -2,6 +2,7 @@
 /udp2raw.exe
 /git_version.h
 /*.o
+.obj/
 *.orig
 *.rej
 *~
