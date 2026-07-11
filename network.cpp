@@ -2213,6 +2213,11 @@ int recv_raw_tcp(raw_info_t &raw_info, char *&payload, int &payloadlen) {
         return -1;
     }
 
+    if (ip_payloadlen < int(sizeof(my_tcphdr))) {
+        mylog(log_debug, "too short to hold tcp header\n");
+        return -1;
+    }
+
     my_tcphdr *tcph = (struct my_tcphdr *)ip_payload;
 
     unsigned short tcphdrlen = tcph->doff * 4;
