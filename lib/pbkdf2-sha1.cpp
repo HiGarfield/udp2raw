@@ -579,7 +579,7 @@ int do_test(testvector * tv)
 		return -1;
 	}
 
-	PKCS5_PBKDF2_HMAC(tv->p, tv->plen, tv->s, tv->slen, tv->c,
+	PKCS5_PBKDF2_HMAC_SHA1(tv->p, tv->plen, tv->s, tv->slen, tv->c,
 	    tv->dkLen, key);
 
 	if (memcmp(tv->dk, key, tv->dkLen) != 0) {
