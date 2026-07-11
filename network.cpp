@@ -2219,12 +2219,12 @@ int recv_raw_tcp(raw_info_t &raw_info, char *&payload, int &payloadlen) {
 
     if (!(tcphdrlen > 0 && tcphdrlen <= 60)) {
         mylog(log_debug, "tcph error\n");
-        return 0;
+        return -1;
     }
 
     if (tcphdrlen > ip_payloadlen) {
         mylog(log_debug, "error,tcphdrlen >ip_payloadlen\n");
-        return 0;
+        return -1;
     }
 
     if (tcph->dest != ntohs(uint16_t(filter_port))) {
