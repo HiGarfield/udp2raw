@@ -429,7 +429,9 @@ struct random_fd_t {
             mylog(log_fatal, "error open /dev/urandom\n");
             myexit(-1);
         }
-        setnonblocking(random_number_fd);
+        // NOTE: deliberately NOT set non-blocking. /dev/urandom always has entropy
+        // available, and O_NONBLOCK would let read() return EAGAIN/short reads that
+        // the caller below did not handle, crashing the process.
     }
     int get_fd() {
         return random_number_fd;
@@ -481,12 +483,31 @@ struct my_random_t {
 } my_random;
 #endif
 
+#if !defined(__MINGW32__)
+// Read exactly `count` bytes into `buf`, retrying on EINTR and draining short
+// reads. /dev/urandom is never opened non-blocking, so this returns as soon as
+// the requested bytes are available. Returns 0 on success or -1 on a fatal error.
+static int read_full(int fd, void *buf, size_t count) {
+    char *p = (char *)buf;
+    size_t done = 0;
+    while (done < count) {
+        int n = (int)read(fd, p + done, count - done);
+        if (n < 0) {
+            if (errno == EINTR) continue;  // a signal interrupted us; retry
+            return -1;
+        }
+        if (n == 0) return -1;  // unexpected EOF
+        done += (size_t)n;
+    }
+    return 0;
+}
+#endif
+
 u64_t get_true_random_number_64() {
 #if !defined(__MINGW32__)
     u64_t ret;
-    int size = read(random_fd.get_fd(), &ret, sizeof(ret));
-    if (size != sizeof(ret)) {
-        mylog(log_fatal, "get random number failed %d\n", size);
+    if (read_full(random_fd.get_fd(), &ret, sizeof(ret)) != 0) {
+        mylog(log_fatal, "get random number failed\n");
         myexit(-1);
     }
     return ret;
@@ -497,9 +518,8 @@ u64_t get_true_random_number_64() {
 u32_t get_true_random_number() {
 #if !defined(__MINGW32__)
     u32_t ret;
-    int size = read(random_fd.get_fd(), &ret, sizeof(ret));
-    if (size != sizeof(ret)) {
-        mylog(log_fatal, "get random number failed %d\n", size);
+    if (read_full(random_fd.get_fd(), &ret, sizeof(ret)) != 0) {
+        mylog(log_fatal, "get random number failed\n");
         myexit(-1);
     }
     return ret;
