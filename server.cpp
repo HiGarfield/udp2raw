@@ -759,8 +759,10 @@ int server_event_loop() {
                 }
                 // assert(len>=0);
                 buf[len] = 0;
-                while (len >= 1 && buf[len - 1] == '\n')
+                while (len >= 1 && buf[len - 1] == '\n') {
                     buf[len - 1] = 0;
+                    len--;
+                }
                 mylog(log_info, "got data from fifo,len=%d,s=[%s]\n", len, buf);
                 mylog(log_info, "unknown command\n");
             } else if (events[idx].data.u64 > u32_t(-1)) {
