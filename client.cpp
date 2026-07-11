@@ -515,6 +515,16 @@ int client_on_udp_recv(conn_info_t &conn_info) {
         return -1;
     }
 
+    // The tunnel adds a conv header (sizeof(u32_t)) plus the safer header
+    // (anti_replay_seq_t + 2*my_id_t + 2) before encryption, so a UDP payload
+    // larger than this cannot be forwarded and would be silently dropped by
+    // send_data_safer. Reject it early with a clear warning instead.
+    const int max_udp_payload = max_data_len - (int)(sizeof(anti_replay_seq_t) + sizeof(my_id_t) * 2 + 2) - (int)sizeof(u32_t);
+    if (recv_len > max_udp_payload) {
+        mylog(log_warn, "udp payload %d exceeds max forwardable %d (conv+safer header overhead), dropped\n", recv_len, max_udp_payload);
+        return -1;
+    }
+
     if (recv_len >= mtu_warn) {
         mylog(log_warn, "huge packet,data len=%d (>=%d).strongly suggested to set a smaller mtu at upper level,to get rid of this warn\n ", recv_len, mtu_warn);
     }
