@@ -18,7 +18,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04, macos-14, macos-15, macos-26]
+        os: [ubuntu-22.04, ubuntu-24.04, macos-14, macos-15, macos-26, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -168,6 +168,23 @@ jobs:
                STRIP_FLAG="-s"
           cp -f udp2raw udp2raw-${{ matrix.os }}
 
+      # ============ Windows: MinGW-w64 32-bit static build ============
+
+      - name: Set up MSYS2 (Windows)
+        if: startsWith(matrix.os, 'windows-')
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW32
+          install: mingw-w64-i686-gcc make git
+          update: true
+
+      - name: Build (Windows)
+        if: startsWith(matrix.os, 'windows-')
+        shell: msys2 {0}
+        run: |
+          make
+          cp -f udp2raw.exe udp2raw-${{ matrix.os }}.exe
+
       # ============ Upload artifact ============
 
       - name: Upload binary artifact
@@ -175,7 +192,7 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: udp2raw-${{ matrix.os }}
-          path: udp2raw-${{ matrix.os }}
+          path: udp2raw-${{ matrix.os }}*
 
   upload-releases:
     needs: [build]
