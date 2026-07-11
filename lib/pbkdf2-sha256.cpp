@@ -676,7 +676,7 @@ int do_test(testvector * tv)
 		return -1;
 	}
 
-	PKCS5_PBKDF2_HMAC((unsigned char*)tv->p, tv->plen,
+	PKCS5_PBKDF2_HMAC_SHA256((unsigned char*)tv->p, tv->plen,
 			(unsigned char*)tv->s, tv->slen, tv->c,
 			tv->dkLen, (unsigned char*)key);
 
