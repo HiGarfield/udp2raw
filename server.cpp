@@ -778,8 +778,12 @@ int server_event_loop() {
             } else if (events[idx].data.u64 > u32_t(-1)) {
                 fd64_t fd64 = events[idx].data.u64;
                 if (!fd_manager.exist(fd64)) {
-                    mylog(log_trace, "fd64 no longer exist\n");
-                    return -1;
+                    // The fd was already closed (e.g. its connection got recycled by
+                    // conn_manager.clear_inactive() while handling the global timer event
+                    // earlier in this same epoll_wait batch). Its stale readiness
+                    // notification is harmless, so skip it instead of aborting the server.
+                    mylog(log_trace, "fd64 no longer exist, skip stale event\n");
+                    continue;
                 }
                 assert(fd_manager.exist_info(fd64));
                 conn_info_t *p_conn_info = fd_manager.get_info(fd64).p_conn_info;
