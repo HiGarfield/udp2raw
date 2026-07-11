@@ -1436,6 +1436,16 @@ int recv_raw_ip(raw_info_t &raw_info, char *&payload, int &payloadlen) {
     }
 
     if (raw_ip_version == AF_INET) {
+        // validate the IPv4 header length before using it: a crafted ihl
+        // (<5 or larger than the packet) would otherwise make csum() read
+        // beyond the received bytes and mis-compute the payload offset.
+        if (iphdrlen < (int)sizeof(my_iphdr) || iphdrlen > ip_len) {
+            mylog(log_debug, "invalid ipv4 header len %d (ip_len %d)\n", iphdrlen, ip_len);
+            return -1;
+        }
+    }
+
+    if (raw_ip_version == AF_INET) {
         if (raw_info.peek == 0)  // avoid cal it twice
         {
             u32_t ip_chk = csum((unsigned short *)ip_begin, iphdrlen);
