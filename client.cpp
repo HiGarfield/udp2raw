@@ -691,8 +691,11 @@ int client_event_loop() {
 
             u32_t hw[6];
             memset(hw, 0, sizeof(hw));
-            sscanf(hw_string.c_str(), "%x:%x:%x:%x:%x:%x", &hw[0], &hw[1], &hw[2],
-                   &hw[3], &hw[4], &hw[5]);
+            if (sscanf(hw_string.c_str(), "%x:%x:%x:%x:%x:%x", &hw[0], &hw[1], &hw[2],
+                       &hw[3], &hw[4], &hw[5]) != 6) {
+                mylog(log_fatal, "failed to parse lower-level dest mac address: %s\n", hw_string.c_str());
+                myexit(-1);
+            }
 
             mylog(log_warn,
                   "make sure this is correct:   if_name=<%s>  dest_mac_adress=<%02x:%02x:%02x:%02x:%02x:%02x>  \n",
