@@ -143,7 +143,7 @@ conn_info_t::~conn_info_t() {
 conn_manager_t::conn_manager_t() {
     ready_num = 0;
     mp.reserve(10007);
-    // clear_it=mp.begin();
+    clear_it = mp.begin();  // mp is empty here, so begin()==end() (a valid sentinel)
     // timer_fd_mp.reserve(10007);
     const_id_mp.reserve(10007);
     // udp_fd_mp.reserve(100007);
@@ -181,6 +181,7 @@ conn_info_t *&conn_manager_t::find_insert_p(address_t addr)  // be aware,the adr
     if (it == mp.end()) {
         mp[addr] = new conn_info_t;
         // lru.new_key(addr);
+        clear_it = mp.begin();  // insertion may rehash and invalidate the persistent clear_it
     } else {
         // lru.update(addr);
     }
@@ -196,12 +197,14 @@ conn_info_t &conn_manager_t::find_insert(address_t addr)  // be aware,the adress
     if (it == mp.end()) {
         mp[addr] = new conn_info_t;
         // lru.new_key(addr);
+        clear_it = mp.begin();  // insertion may rehash and invalidate the persistent clear_it
     } else {
         // lru.update(addr);
     }
     return *mp[addr];
 }
 int conn_manager_t::erase(unordered_map<address_t, conn_info_t *>::iterator erase_it) {
+    clear_it = mp.begin();  // the erased element may be clear_it itself; erase can also rehash. Restart scanning from begin().
     if (erase_it->second->state.server_current_state == server_ready) {
         ready_num--;
         assert(i32_t(ready_num) != -1);
