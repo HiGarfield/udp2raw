@@ -8,3 +8,4 @@
 *~
 /*.patch
 TAGS*~
+test/test_bugfix
