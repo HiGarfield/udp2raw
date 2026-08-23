@@ -517,12 +517,15 @@ int client_on_udp_recv(conn_info_t &conn_info) {
     }
 
     // The tunnel adds a conv header (sizeof(u32_t)) plus the safer header
-    // (anti_replay_seq_t + 2*my_id_t + 2) before encryption, so a UDP payload
-    // larger than this cannot be forwarded and would be silently dropped by
-    // send_data_safer. Reject it early with a clear warning instead.
-    const int max_udp_payload = max_data_len - (int)(sizeof(anti_replay_seq_t) + sizeof(my_id_t) * 2 + 2) - (int)sizeof(u32_t);
+    // (anti_replay_seq_t + 2*my_id_t + 2) before encryption, and encryption
+    // itself adds the auth tag plus up to 15 bytes of CBC padding. A UDP
+    // payload larger than this would either be silently dropped by the peer's
+    // my_decrypt() (encrypted len > max_data_len) or rejected by send_safer.
+    // get_max_plain_len() returns the largest plaintext that survives
+    // encryption within max_data_len; reject oversized payloads early.
+    const int max_udp_payload = get_max_plain_len() - (int)(sizeof(anti_replay_seq_t) + sizeof(my_id_t) * 2 + 2) - (int)sizeof(u32_t);
     if (recv_len > max_udp_payload) {
-        mylog(log_warn, "udp payload %d exceeds max forwardable %d (conv+safer header overhead), dropped\n", recv_len, max_udp_payload);
+        mylog(log_warn, "udp payload %d exceeds max forwardable %d (conv+safer header+encryption overhead), dropped\n", recv_len, max_udp_payload);
         return -1;
     }
 

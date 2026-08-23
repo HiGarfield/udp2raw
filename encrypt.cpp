@@ -525,6 +525,46 @@ int cipher_decrypt(const char *data, char *output, int &len, char *key) {
     return -1;
 }
 
+int get_auth_overhead() {
+    switch (auth_mode) {
+        case auth_none:
+            return 0;
+        case auth_md5:
+            return 16;
+        case auth_crc32:
+            return 4;
+        case auth_simple:
+            return 8;
+        case auth_hmac_sha1:
+            return 20;
+        default:
+            mylog(log_warn, "unknown auth_mode %d, assuming hmac overhead\n", (int)auth_mode);
+            return 20;
+    }
+}
+
+int get_max_plain_len() {
+    const int auth_ovh = get_auth_overhead();
+    if (cipher_mode == cipher_aes128cbc) {
+        // CBC pads with 1..16 bytes: padding() adds 16 - (x % 16), which is 16
+        // when x is already a multiple of 16 (PKCS#7-style). So the output is
+        // ((x/16)+1)*16 where x = data + auth (mac-then-encrypt) or x = data
+        // with auth appended afterwards (encrypt-then-MAC). The output must not
+        // exceed max_data_len (1800), i.e. ((x/16)+1)*16 <= 1800 <=> x <= 1791.
+        if (is_hmac_used) {
+            // encrypt_AE: output = ((data/16)+1)*16 + auth <= max_data_len
+            //   => ((data/16)+1)*16 <= max_data_len - auth_ovh
+            //   => data <= ((max_data_len - auth_ovh)/16 - 1)*16 + 15
+            return (max_data_len - auth_ovh) / 16 * 16 - 1;
+        }
+        // mac-then-encrypt: ((data+auth)/16+1)*16 <= max_data_len
+        //   => data + auth <= 1791 = (max_data_len/16 - 1)*16 + 15
+        return (max_data_len / 16 - 1) * 16 + 15 - auth_ovh;
+    }
+    // CFB/XOR/none ciphers do not pad: output = data + auth.
+    return max_data_len - auth_ovh;
+}
+
 int encrypt_AE(const char *data, char *output, int &len /*,char * key*/) {
     mylog(log_trace, "encrypt_AE is called\n");
     char buf[buf_len];
@@ -539,6 +579,11 @@ int encrypt_AE(const char *data, char *output, int &len /*,char * key*/) {
         return -1;
     }
 
+    if (len > max_data_len) {
+        // defense in depth: never emit a packet the peer's my_decrypt() would reject
+        mylog(log_warn, "encrypt_AE: encrypted len %d exceeds max_data_len %d\n", len, max_data_len);
+        return -1;
+    }
     // printf("%d %x %x\n",len,(int)(output[0]),(int)(output[1]));
     // print_binary_chars(output,len);
 
@@ -584,6 +629,11 @@ int my_encrypt(const char *data, char *output, int &len /*,char * key*/) {
     }
     if (cipher_encrypt(buf2, output, len, normal_key) != 0) {
         mylog(log_debug, "cipher_encrypt failed ");
+        return -1;
+    }
+    if (len > max_data_len) {
+        // defense in depth: never emit a packet the peer's my_decrypt() would reject
+        mylog(log_warn, "my_encrypt: encrypted len %d exceeds max_data_len %d\n", len, max_data_len);
         return -1;
     }
     return 0;

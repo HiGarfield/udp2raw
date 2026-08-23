@@ -16,6 +16,14 @@ int my_init_keys(const char *, int);
 int my_encrypt(const char *data, char *output, int &len);
 int my_decrypt(const char *data, char *output, int &len);
 
+// Returns the maximum plaintext length accepted by my_encrypt() (i.e. the
+// input length such that the encrypted output never exceeds max_data_len)
+// for the currently configured auth_mode/cipher_mode. The CBC cipher pads
+// the (data+auth) block to a multiple of 16, so the exact bound is
+// (max_data_len - 8) - auth_overhead for CBC and max_data_len - auth_overhead
+// for the non-padding ciphers (CFB/XOR/none).
+int get_max_plain_len();
+
 unsigned short csum(const unsigned short *ptr, int nbytes);
 
 enum auth_mode_t { auth_none = 0,
