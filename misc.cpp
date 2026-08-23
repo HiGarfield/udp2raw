@@ -826,9 +826,11 @@ void pre_process_arg(int argc, char *argv[])  // mainly for load conf file
     if (count > 0) {
         load_config(argv[pos + 1], new_argc, new_argv);
     }
-    char *new_argv_char[new_argv.size()];
+    // use a std::vector instead of a VLA: VLA is a GCC extension (not portable
+    // to MSVC) and new_argv.size() may be 0, which is not allowed for arrays.
+    vector<char *> new_argv_char;
+    new_argv_char.reserve(new_argv.size());
 
-    new_argc = 0;
     for (i = 0; i < (int)new_argv.size(); i++) {
         if (strcmp(new_argv[i].c_str(), "--conf-file") == 0) {
             mylog(log_fatal, "cant have --conf-file in a config file\n");
@@ -837,9 +839,9 @@ void pre_process_arg(int argc, char *argv[])  // mainly for load conf file
         else if (strcmp(new_argv[i].c_str(), "--retry-on-error") == 0)
             retry_on_error = 1;
         else
-            new_argv_char[new_argc++] = (char *)new_argv[i].c_str();
+            new_argv_char.push_back((char *)new_argv[i].c_str());
     }
-    process_arg(new_argc, new_argv_char);
+    process_arg((int)new_argv_char.size(), new_argv_char.data());
 }
 #ifdef UDP2RAW_LINUX
 void *run_keep(void *none)  // called in a new thread for --keep-rule option
