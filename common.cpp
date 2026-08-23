@@ -280,7 +280,7 @@ int init_ws() {
     int tmp[] = {0, 100, 200, 300, 500, 800, 1000, 2000, 3000, 4000, -1};
     int succ = 0;
     for (int i = 1; tmp[i] != -1; i++) {
-        if (_setmaxstdio(100) == -1)
+        if (_setmaxstdio(tmp[i]) == -1)
             break;
         else
             succ = i;
