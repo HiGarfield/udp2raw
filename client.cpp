@@ -289,6 +289,7 @@ int client_on_timer(conn_info_t &conn_info)  // for client. called when a timer 
             conn_info.state.client_current_state = client_idle;
             conn_info.my_id = get_true_random_number_nz();
             mylog(log_info, "state back to client_idle from  client_ready bc of client-->server direction timeout\n");
+            return 0;  // my_id was just replaced; a heartbeat sent now would fail the peer's id check
         }
 
         if (get_current_time() - conn_info.last_hb_sent_time < heartbeat_interval) {
