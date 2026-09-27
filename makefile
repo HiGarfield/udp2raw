@@ -49,17 +49,10 @@ LIBS := -lpthread
 LIBS += $(if $(filter Windows,$(TARGET_OS)),-lws2_32)
 LIBS += $(if $(filter Linux,$(TARGET_OS)),-lrt)
 
-# PCAP: Windows uses the npcap SDK, others use libpcap
+
 ifeq ($(TARGET_OS),Windows)
-PCAP_INC := -isystem npcap/Include
-PCAP_LIB := -lwpcap $(if $(findstring x86_64,$(CXX_TARGET)),-Lnpcap/Lib/x64, \
-            $(if $(findstring i386,$(CXX_TARGET)),-Lnpcap/Lib, \
-            $(if $(findstring i486,$(CXX_TARGET)),-Lnpcap/Lib, \
-            $(if $(findstring i586,$(CXX_TARGET)),-Lnpcap/Lib, \
-            $(if $(findstring i686,$(CXX_TARGET)),-Lnpcap/Lib, \
-            $(error "Target architecture not supported: $(CXX_TARGET)"))))))
+PCAP_LIB :=
 else
-PCAP_INC :=
 PCAP_LIB := -lpcap
 endif
 
@@ -71,7 +64,11 @@ AES_FASTER_SRCS := $(wildcard lib/aes_faster_c/*.cpp)
 AES_ACC_SRCS := $(wildcard lib/aes_acc/aes*.c)
 AES_ACC_TARGETS := $(basename $(notdir $(wildcard lib/aes_acc/asm/*.S)))
 
+ifeq ($(TARGET_OS),Windows)
+NAME := udp2raw.exe
+else
 NAME := udp2raw
+endif
 
 # ---- git_version.h: regenerate only when the version actually changes ----
 # FORCE makes the recipe run every time; the cmp guard only rewrites the
@@ -88,22 +85,23 @@ DEFAULT_FLAVOR := $(if $(filter Linux,$(TARGET_OS)),linux,pcap)
 
 # ---- Per-flavor build template (separate object dirs avoid stale-object mix-ups) ----
 # $(1)=flavor name, $(2)=extra TARGET_FLAGS (e.g. MP + PCAP)
+# $(1)=flavor name, $(2)=extra compile flags (defines etc.), $(3)=extra link libs
 define FLAVOR_build
 $(1)_OBJS := $$(addprefix .obj/$(1)/,$$(COMMON_SRCS:.cpp=.o) $$(AES_FASTER_SRCS:.cpp=.o))
 .obj/$(1)/%.o: %.cpp | git_version.h
 	@mkdir -p $$(dir $$@)
 	$$(CXX) $$(CXXFLAGS) $$(OPT_FLAGS) $(2) -c $$< -o $$@
 $(1): $$($(1)_OBJS) git_version.h
-	$$(CXX) $$($(1)_OBJS) $$(LDFLAGS_BASE) $$(STRIP_FLAG) $(2) $$(LIBS) -o $$(NAME)
+	$$(CXX) $$($(1)_OBJS) $$(LDFLAGS_BASE) $$(STRIP_FLAG) $(2) $(3) $$(LIBS) -o $$(NAME)
 endef
 
-$(eval $(call FLAVOR_build,linux,))
-$(eval $(call FLAVOR_build,pcap,$(MP) $(PCAP_INC) $(PCAP_LIB)))
+$(eval $(call FLAVOR_build,linux,,))
+$(eval $(call FLAVOR_build,pcap,$(MP),$(PCAP_LIB)))
 
 # debug = pcap flags but unoptimized and not stripped
 debug: OPT_FLAGS := -O0 -g
 debug: STRIP_FLAG :=
-$(eval $(call FLAVOR_build,debug,$(MP) $(PCAP_INC) $(PCAP_LIB)))
+$(eval $(call FLAVOR_build,debug,$(MP),$(PCAP_LIB)))
 
 # ---- AES hardware-accelerated variants ----
 # Each builds the binary with its matching asm implementation.
