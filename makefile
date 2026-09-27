@@ -41,7 +41,7 @@ OPT_FLAGS += $(if $(filter MacOS,$(TARGET_OS)),,-ffunction-sections)
 
 # Link flags
 LDFLAGS_BASE := $(if $(filter MacOS,$(TARGET_OS)),,-Wl,--gc-sections) \
-                $(if $(filter Windows,$(TARGET_OS)),-static,)
+                $(if $(filter Windows,$(TARGET_OS)),-static -static-libgcc -static-libstdc++,)
 STRIP_FLAG ?= -s
 
 # Libraries

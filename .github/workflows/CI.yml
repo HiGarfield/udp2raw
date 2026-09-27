@@ -182,7 +182,7 @@ jobs:
         if: startsWith(matrix.os, 'windows-')
         shell: msys2 {0}
         run: |
-          make
+          make LDFLAGS_BASE="-Wl,--gc-sections -static -static-libgcc -static-libstdc++"
           cp -f udp2raw.exe udp2raw-${{ matrix.os }}.exe
 
       # ============ Upload artifact ============
